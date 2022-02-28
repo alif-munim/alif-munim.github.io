@@ -1,14 +1,13 @@
 # Site settings
-title:       Pixyll
-email:       your_email@example.com
-author:      John Otander
-description: "A simple, beautiful theme for Jekyll that emphasizes content rather than aesthetic fluff."
+title:       Alif Munim
+email:       alif.munim@ryerson.ca
+author:      Alif Munim
+description: "About me."
 baseurl:     ""
-url:         "https://pixyll.com"
+url:         "https://alif-munim.github.io/"
 date_format: "%b %-d, %Y"
 header_pages:
- - about.md
- - contact.html
+ - 
 
 # Google services
 google_verification:

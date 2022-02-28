@@ -1,34 +1,186 @@
 ---
 layout: default
 ---
-{% assign posts_count = paginator.posts | size %}
 
-<div class="home">
-  {% if posts_count > 0 %}
-    <div class="posts">
-      {% for post in paginator.posts %}
-        <div class="post py3">
-          <p class="post-meta">
-	    {% if site.date_format %}
-	      {{ post.date | date: site.date_format }}
-	    {% else %}
-	      {{ post.date | date: "%b %-d, %Y" }}
-	    {% endif %}
-	  </p>
-          <a href="{{ post.url | relative_url }}" class="post-link"><h3 class="h1 post-title">{{ post.title }}</h3></a>
-          <span class="post-summary">
-            {% if post.summary %}
-              {{ post.summary }}
-            {% else %}
-              {{ post.excerpt }}
-            {% endif %}
-          </span>
-        </div>
-      {% endfor %}
+<div class="post">
+  <article class="post-content">
+
+    <div style="text-align:center;">
+      <img src="{{ site.baseurl }}/images/me.jpg" alt="Alif Munim"
+        style="
+          width: 8rem;
+          border-radius: 50%;
+        "/>
     </div>
 
-    {% include pagination.html %}
-  {% else %}
-    <h1 class='center'>{{ site.text.index.coming_soon }}</h1>
-  {% endif %}
+    <header class="post-header" style="text-align: center;">
+      <h1 style="font-size: 1.8rem; margin-top: 0; margin-bottom: 0;">
+                  Alif Munim</h1>
+    </header>
+
+    <br>
+    <p>
+      I'm a fourth-year undergraduate co-op student studying Computer Science
+      and Psychology at Ryerson University.
+
+      My aim is to achieve a deeper understanding of human
+      perception and reasoning using machine learning.
+
+      I am primarily interested in its applications in mitigating
+      media bias and aiding biomedical professionals.
+    </p>
+    <p>
+      I'm incredibly fortunate to be supervised by Dr. Dafna Sussman
+      as a computer vision research assistant at Ryerson's Maternal-Fetal Imaging Lab, located at the iBEST institute.
+      Prior to this, I was supervised by Dr. Eric Yu at the University of Toronto as a research
+      assistant in natural language understanding and business automation.
+    </p>
+
+    </article>
+
+    <br><br>
+    <div id="Academic Experience" class="post">
+      <article class="post-content">
+          <header class="post-header">
+            <h1 style="font-size: 2rem; margin-top: 0; margin-bottom: 0">Academic Experience</h1>
+          </header>
+      </article>
+    </div>
+
+    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="20">
+
+
+      <!-- Experience Entry -->
+      <tr>
+        <td valign="middle" width="25%">
+          <a href="https://arxiv.org/abs/2108.04227" onmouseout="gibbs_jem_stop()" onmouseover="gibbs_jem_start()">
+            <div style="position: relative;">
+              <div id="gibbs_jem_image" style="position: absolute; transition: opacity .2s ease-in-out;-webkit-transition: opacity .2s ease-in-out;-moz-transition: opacity .2s ease-in-out;-o-transition: opacity .2s ease-in-out;">
+                <img src="{{ site.base_url }}/images/exp/unet.png">
+              </div>
+              <img src="{{ site.base_url }}/images/exp/ryerson.png">
+            </div>
+          </a>
+          <script type="text/javascript">
+            function gibbs_jem_start() {
+              document.getElementById("gibbs_jem_image").style.opacity = "1";
+            }
+
+            function gibbs_jem_stop() {
+              document.getElementById("gibbs_jem_image").style.opacity = "0";
+            }
+            gibbs_jem_stop()
+          </script>
+        </td>
+
+        <td valign="top" width="75%">
+          <h3>Classical vs Deep Learning Methods for Image Segmentation of Small Brain MRI Datasets</h3>
+          <p>
+              <!-- Multi-attribute classification generalizes classification, presenting new challenges for making accurate
+              predictions and quantifying uncertainty.
+              We build upon recent work and show that architectures for multi-attribute prediction can be reinterpreted as
+              energy-based models (EBMs).
+              We propose a simple extension that allows us to directly maximize the likelihood of data and labels under the
+              unnormalized joint distribution.
+              Our models are capable of both accurate, calibrated predictions and high-quality conditional synthesis
+              of novel attribute combinations. -->
+
+             A review of approaches to overcome the challenges that exist in biomedical
+             image processing; low segmentation accuracy, small datasets, and low resolution.
+
+             I worked with Dr. Dafna Sussman, Daniel Nussey, and Rachita Singh at Ryerson's MFI Lab to
+             compare u-nets, fully convolutional networks, and gradient-boosted ensemble models for
+             the segmentation of brain metastases in <100 3D MRI scans.
+          </p>
+        </td>
+      </tr>
+      <!-- End of Experience Entry -->
+
+      <!-- Experience Entry -->
+      <tr>
+        <td valign="middle" width="25%">
+          <a href="https://arxiv.org/abs/2010.04230" onmouseout="vera_stop()" onmouseover="vera_start()">
+            <div style="position: relative;">
+              <div id="vera_image" style="position: absolute; transition: opacity .2s ease-in-out;-webkit-transition: opacity .2s ease-in-out;-moz-transition: opacity .2s ease-in-out;-o-transition: opacity .2s ease-in-out;">
+                <img src="{{ site.base_url }}/images/exp/unet.png">
+              </div>
+              <img src="{{ site.base_url }}/images/exp/uoft.png">
+            </div>
+          </a>
+          <script type="text/javascript">
+            function vera_start() {
+              document.getElementById("vera_image").style.opacity = "1";
+            }
+
+            function vera_stop() {
+              document.getElementById("vera_image").style.opacity = "0";
+            }
+            vera_stop()
+          </script>
+        </td>
+
+        <td valign="top" width="75%">
+          <h3>Email Speech Act Classification for Task Automation</h3>
+          <p>
+              A collaborative effort between the University of Toronto and IBM's Center for Advanced Studies (CAS)
+              to extend prior work in speech-act theory and bring it into the realm of deep learning.
+              More specifically, we utilize earlier work by Carvalho and Cohen (2005) defining illocutionary points
+              in "email speech acts" to build taxonomic word embeddings for semantic relatedness. I had the pleasure
+              of being supervised by Dr. Eric Yu during my time contributing to this project. Our work culminated
+              in the launch of IBM Watson Orchestrate, a productivity assistant that won a 2022 CES Innovation Award.
+          </p>
+        </td>
+      </tr>
+      <!-- End of Experience Entry -->
+    </table>
+    <br><br>
+
+    <!-- Industry -->
+    <div id="Industry" class="post">
+        <article class="post-content">
+            <header class="post-header">
+              <h1 style="font-size: 2rem; margin-top: 0; margin-bottom: 0">Industry Experience</h1>
+            </header>
+        </article>
+    </div>
+
+    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="20">
+
+    <tr>
+      <td valign="middle" width="25%">
+    <a href="https://arxiv.org/abs/2007.04504" onmouseout="taynode_stop()" onmouseover="taynode_start()">
+      <div style="position: relative;">
+        <div id="taynode_image" style="position: absolute; transition: opacity .2s ease-in-out;-webkit-transition: opacity .2s ease-in-out;-moz-transition: opacity .2s ease-in-out;-o-transition: opacity .2s ease-in-out;">
+          <img src="{{ site.base_url }}/images/exp/unet.png">
+        </div>
+        <img src="{{ site.base_url }}/images/exp/ibm.svg">
+      </div>
+    </a>
+    <script type="text/javascript">
+      function taynode_start() {
+        document.getElementById("taynode_image").style.opacity = "1";
+      }
+
+      function taynode_stop() {
+        document.getElementById("taynode_image").style.opacity = "0";
+      }
+      taynode_stop()
+    </script>
+  </td>
+
+
+      <td valign="top" width="75%">
+
+        <h3>Building Intelligent Enterprises with IBM Watson AIOps</h3>
+        <p>
+            IBM Cloud Pak for Watson AIOps is an intelligent IT solution for businesses.
+            Using AI for predictive log analytics and anomaly detection, Watson AIOps automates
+            complex IT processes and vastly reduces risk. As a software engineer intern on the
+            Watson AIOps team, I took on a lead role in building efficient data pipelines for
+            data cleaning, feature extraction, and AI training.
+      </td>
+    </tr>
+    </table>
+
+
 </div>
