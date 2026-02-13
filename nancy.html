@@ -1,0 +1,964 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>???</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a0a10;
+      color: #ff6b8a;
+      font-family: 'Source Code Pro', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+    h1 { font-size: 1.2rem; font-weight: 400; margin-bottom: 0.4rem; letter-spacing: 0.15em; opacity: 0.8; }
+    #hud { display: flex; gap: 2rem; margin-bottom: 0.6rem; font-size: 0.8rem; opacity: 0.7; align-items: center; }
+    #hearts-collected { display: flex; gap: 4px; }
+    .heart-slot { width: 18px; height: 18px; opacity: 0.2; transition: opacity 0.5s; }
+    .heart-slot.found { opacity: 1; }
+    canvas { border: 2px solid #ff4d6d; box-shadow: 0 0 30px rgba(255, 77, 109, 0.15); }
+    #message { margin-top: 0.7rem; font-size: 0.8rem; height: 1.4rem; color: #ff8fa3; opacity: 0.7; }
+    .overlay { position: fixed; inset: 0; background: rgba(26, 10, 16, 0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+    .overlay h2 { font-size: 1.6rem; color: #ff4d6d; margin-bottom: 0.6rem; text-shadow: 0 0 30px rgba(255, 77, 109, 0.5); font-family: 'Source Code Pro', monospace; }
+    .overlay p { font-size: 0.85rem; color: #ff8fa3; margin-bottom: 0.4rem; font-family: 'Source Code Pro', monospace; text-align: center; line-height: 1.6; }
+    .overlay button { background: none; border: 1px solid #ff4d6d; color: #ff4d6d; font-family: 'Source Code Pro', monospace; font-size: 0.85rem; padding: 0.6rem 1.8rem; cursor: pointer; transition: all 0.2s; margin-top: 1rem; }
+    .overlay button:hover { background: #ff4d6d; color: #1a0a10; }
+    .overlay canvas { border: none; box-shadow: none; margin: 1rem 0; }
+
+    /* Login screen */
+    #login-screen {
+      position: fixed; inset: 0;
+      background: #1a0a10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 50;
+    }
+    #login-screen h2 {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 1.4rem; color: #ff4d6d;
+      margin-bottom: 1.5rem; font-weight: 400;
+      letter-spacing: 0.15em;
+      text-shadow: 0 0 30px rgba(255, 77, 109, 0.4);
+    }
+    #login-screen input {
+      background: transparent;
+      border: 1px solid #ff4d6d;
+      color: #ff8fa3;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+      width: 220px;
+      margin-bottom: 0.6rem;
+      outline: none;
+      text-align: center;
+    }
+    #login-screen input::placeholder { color: rgba(255, 143, 163, 0.3); }
+    #login-screen input:focus { border-color: #ff8fa3; box-shadow: 0 0 10px rgba(255, 77, 109, 0.2); }
+    #login-screen button {
+      background: none; border: 1px solid #ff4d6d; color: #ff4d6d;
+      font-family: 'Source Code Pro', monospace; font-size: 0.85rem;
+      padding: 0.6rem 1.8rem; cursor: pointer;
+      transition: all 0.2s; margin-top: 0.6rem;
+    }
+    #login-screen button:hover { background: #ff4d6d; color: #1a0a10; }
+    #login-error {
+      color: #ff4d6d; font-size: 0.75rem; margin-top: 0.6rem;
+      height: 1rem; opacity: 0.8;
+    }
+    .poem-line {
+      font-size: 0.82rem; color: #ff8fa3; line-height: 1.8;
+      font-style: italic; opacity: 0; animation: fadeInLine 0.6s ease forwards;
+    }
+    .poem-container { margin: 1rem 0 0.5rem; text-align: center; }
+    @keyframes fadeInLine { to { opacity: 0.85; } }
+  </style>
+</head>
+<body>
+
+  <!-- Login Screen -->
+  <div id="login-screen">
+    <h2>// heartstealer</h2>
+    <input type="text" id="login-user" placeholder="username" autocomplete="off" spellcheck="false"/>
+    <input type="password" id="login-pass" placeholder="password" autocomplete="off"/>
+    <button id="login-btn">enter</button>
+    <div id="login-error">&nbsp;</div>
+  </div>
+
+  <!-- Game (hidden until login) -->
+  <div id="game-wrapper" style="display:none;">
+  <h1 id="title">// heartstealer</h1>
+  <div id="hud">
+    <div id="hearts-collected">
+      <svg class="heart-slot" id="h0" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#ff4d6d"/></svg>
+      <svg class="heart-slot" id="h1" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#ff4d6d"/></svg>
+      <svg class="heart-slot" id="h2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#ff4d6d"/></svg>
+    </div>
+    <div>level: <span id="level-num" style="color:#ff4d6d">1</span>/4</div>
+    <div>time: <span id="timer" style="color:#ff4d6d">0:30</span></div>
+  </div>
+  <canvas id="game" width="720" height="480"></canvas>
+  <div id="message">loading sprites...</div>
+  </div><!-- end game-wrapper -->
+
+  <script>
+  // ── LOGIN ──
+  (function() {
+    const loginScreen = document.getElementById('login-screen');
+    const loginBtn = document.getElementById('login-btn');
+    const loginUser = document.getElementById('login-user');
+    const loginPass = document.getElementById('login-pass');
+    const loginError = document.getElementById('login-error');
+    const gameWrapper = document.getElementById('game-wrapper');
+
+    function attemptLogin() {
+      const u = loginUser.value.trim().toLowerCase();
+      const p = loginPass.value.trim().toLowerCase();
+      if (u === 'nancy' && p === 'valentine') {
+        loginScreen.style.display = 'none';
+        gameWrapper.style.display = 'flex';
+        gameWrapper.style.flexDirection = 'column';
+        gameWrapper.style.alignItems = 'center';
+        startGame();
+      } else {
+        loginError.textContent = 'wrong credentials...';
+        loginPass.value = '';
+        loginScreen.style.animation = 'none';
+        loginScreen.offsetHeight; // reflow
+      }
+    }
+
+    loginBtn.addEventListener('click', attemptLogin);
+    loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+    loginUser.addEventListener('keydown', e => { if (e.key === 'Enter') loginPass.focus(); });
+    loginUser.focus();
+  })();
+
+  let gameStarted = false;
+  function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+    loadAllSprites().then(() => {
+      initPlatformer(); updateHeartUI(); gameState = 'playing';
+      msgEl.textContent = 'arrows to move · space to jump';
+      loop();
+    });
+  }
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const levelEl = document.getElementById('level-num');
+  const msgEl = document.getElementById('message');
+  const titleEl = document.getElementById('title');
+  const timerEl = document.getElementById('timer');
+  const W = 720, H = 480;
+
+  const keys = {};
+  document.addEventListener('keydown', e => {
+    keys[e.key] = true;
+    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','z','Z','x','X'].includes(e.key)) e.preventDefault();
+  });
+  document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+  // ── SPRITE SYSTEM ──
+  const FRAME_SZ = 32;
+  const DRAW_SZ = 48; // render scaled up
+
+  function loadImg(src) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+
+  const sprites = { pink: {}, owlet: {} };
+
+  async function loadAllSprites() {
+    const pBase = '/images/game/pink_monster/';
+    const oBase = '/images/game/owlet_monster/';
+
+    const [pIdle, pRun, pJump, pAtk, pHurt, pDeath,
+           oIdle, oRun, oAtk, oHurt, oDeath] = await Promise.all([
+      loadImg(pBase + 'Pink_Monster_Idle_4.png'),
+      loadImg(pBase + 'Pink_Monster_Run_6.png'),
+      loadImg(pBase + 'Pink_Monster_Jump_8.png'),
+      loadImg(pBase + 'Pink_Monster_Attack1_4.png'),
+      loadImg(pBase + 'Pink_Monster_Hurt_4.png'),
+      loadImg(pBase + 'Pink_Monster_Death_8.png'),
+      loadImg(oBase + 'Owlet_Monster_Idle_4.png'),
+      loadImg(oBase + 'Owlet_Monster_Run_6.png'),
+      loadImg(oBase + 'Owlet_Monster_Attack1_4.png'),
+      loadImg(oBase + 'Owlet_Monster_Hurt_4.png'),
+      loadImg(oBase + 'Owlet_Monster_Death_8.png'),
+    ]);
+
+    sprites.pink = { idle: { img: pIdle, frames: 4 }, run: { img: pRun, frames: 6 }, jump: { img: pJump, frames: 8 }, attack: { img: pAtk, frames: 4 }, hurt: { img: pHurt, frames: 4 }, death: { img: pDeath, frames: 8 } };
+    sprites.owlet = { idle: { img: oIdle, frames: 4 }, run: { img: oRun, frames: 6 }, attack: { img: oAtk, frames: 4 }, hurt: { img: oHurt, frames: 4 }, death: { img: oDeath, frames: 8 } };
+  }
+
+  function drawSprite(spriteData, frameIdx, x, y, flip, size) {
+    if (!spriteData || !spriteData.img) return;
+    const sz = size || DRAW_SZ;
+    const frame = frameIdx % spriteData.frames;
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    if (flip) {
+      ctx.translate(x + sz, y);
+      ctx.scale(-1, 1);
+      ctx.drawImage(spriteData.img, frame * FRAME_SZ, 0, FRAME_SZ, FRAME_SZ, 0, 0, sz, sz);
+    } else {
+      ctx.drawImage(spriteData.img, frame * FRAME_SZ, 0, FRAME_SZ, FRAME_SZ, x, y, sz, sz);
+    }
+    ctx.restore();
+  }
+
+  // Animation state helper
+  function makeAnimState() {
+    return { tick: 0, frame: 0, anim: 'idle', speed: 8 };
+  }
+
+  function updateAnim(state, anim, speed) {
+    if (state.anim !== anim) { state.anim = anim; state.frame = 0; state.tick = 0; }
+    state.speed = speed || 8;
+    state.tick++;
+    if (state.tick >= state.speed) { state.tick = 0; state.frame++; }
+  }
+
+  // ── GAME STATE ──
+  let heartsFound = [false, false, false];
+  let currentLevel = 0;
+  let particles = [];
+  let screenShake = 0;
+  let gameState = 'loading';
+
+  let levelStartTime = 0, levelTimeLimit = 0;
+  const TIME_LIMITS = [25, 25, 45, 60]; // platformer, maze, petals, boss
+
+  function startTimer(s) { levelTimeLimit = s; levelStartTime = Date.now(); }
+  function getTimeLeft() { if (gameState !== 'playing') return levelTimeLimit; return Math.max(0, levelTimeLimit - (Date.now() - levelStartTime) / 1000); }
+  function formatTime(s) { return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`; }
+  function updateTimerDisplay() { const l = getTimeLeft(); timerEl.textContent = formatTime(l); timerEl.style.color = l <= 5 ? '#ff2222' : '#ff4d6d'; }
+
+  function checkTimeUp() {
+    if (gameState !== 'playing') return false;
+    if (getTimeLeft() <= 0) {
+      gameState = 'transition';
+      showOverlay("time's up", 'the heart slipped away...', 'try again', restartCurrentLevel);
+      return true;
+    }
+    return false;
+  }
+
+  function restartCurrentLevel() {
+    canvas.width = 720; canvas.height = 480;
+    if (currentLevel === 0) initPlatformer();
+    else if (currentLevel === 1) initMaze();
+    else if (currentLevel === 2) initDodge();
+    else if (currentLevel === 3) initBoss();
+    gameState = 'playing';
+  }
+
+  function updateHeartUI() { for (let i = 0; i < 3; i++) document.getElementById('h' + i).classList.toggle('found', heartsFound[i]); }
+
+  function showOverlay(title, subtitle, btnText, onBtn) {
+    const ov = document.createElement('div');
+    ov.className = 'overlay';
+    ov.innerHTML = `<h2>${title}</h2><p>${subtitle}</p><button>${btnText}</button>`;
+    document.body.appendChild(ov);
+    ov.querySelector('button').onclick = () => { ov.remove(); onBtn(); };
+  }
+
+  // ── DRAWING HELPERS ──
+  function drawHeart(cx, cy, size, color, glow) {
+    ctx.save();
+    if (glow) { ctx.shadowColor = color; ctx.shadowBlur = glow; }
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    const s = size;
+    ctx.moveTo(cx, cy + s * 0.3);
+    ctx.bezierCurveTo(cx, cy - s * 0.1, cx - s * 0.5, cy - s * 0.4, cx - s * 0.5, cy);
+    ctx.bezierCurveTo(cx - s * 0.5, cy + s * 0.3, cx, cy + s * 0.55, cx, cy + s * 0.7);
+    ctx.bezierCurveTo(cx, cy + s * 0.55, cx + s * 0.5, cy + s * 0.3, cx + s * 0.5, cy);
+    ctx.bezierCurveTo(cx + s * 0.5, cy - s * 0.4, cx, cy - s * 0.1, cx, cy + s * 0.3);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawHeartPiece(cx, cy, size, pieceIdx, time) {
+    const bob = Math.sin(time / 400) * 4, y = cy + bob, pulse = 0.8 + 0.2 * Math.sin(time / 200);
+    ctx.save();
+    ctx.shadowColor = '#ff4d6d'; ctx.shadowBlur = 15 * pulse;
+    ctx.beginPath();
+    if (pieceIdx === 0) ctx.rect(cx - size, y - size, size, size * 2.5);
+    else if (pieceIdx === 1) ctx.rect(cx - size * 0.25, y - size, size * 0.5, size * 2.5);
+    else ctx.rect(cx, y - size, size, size * 2.5);
+    ctx.clip();
+    drawHeart(cx, y, size, `rgba(255, 77, 109, ${0.7 + 0.3 * pulse})`, 0);
+    ctx.restore();
+    if (Math.random() > 0.85) spawnParticles(cx + (Math.random() - 0.5) * size, y + (Math.random() - 0.5) * size, '#ff8fa3', 1);
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) particles.push({ x, y, vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 1) * 3, life: 25 + Math.random() * 20, maxLife: 45, size: 1.5 + Math.random() * 2.5, color });
+  }
+
+  function updateParticles() { for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life--; if (p.life <= 0) particles.splice(i, 1); } }
+
+  function drawParticles() { for (const p of particles) { ctx.globalAlpha = p.life / p.maxLife; ctx.fillStyle = p.color; ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size); } ctx.globalAlpha = 1; }
+
+  function drawBG() { ctx.fillStyle = '#1a0a10'; ctx.fillRect(-10, -10, W + 20, H + 20); }
+
+  function drawTimerBar() {
+    const left = getTimeLeft(), pct = left / levelTimeLimit, barW = canvas.width - 20;
+    ctx.fillStyle = 'rgba(255, 77, 109, 0.15)'; ctx.fillRect(10, 6, barW, 4);
+    const color = left <= 5 ? '#ff2222' : left <= 10 ? '#ff6b4d' : '#ff4d6d';
+    ctx.fillStyle = color; ctx.fillRect(10, 6, barW * pct, 4);
+    if (left <= 5) { ctx.shadowColor = '#ff2222'; ctx.shadowBlur = 8; ctx.fillRect(10, 6, barW * pct, 4); ctx.shadowBlur = 0; }
+  }
+
+  // ── LEVEL 1: PLATFORMER ──
+  const TILE = 32;
+  const platformLevel = [
+    '......................',
+    '......................',
+    '......................',
+    '..............H.......',
+    '.............####.....',
+    '......................',
+    '.........CC...........',
+    '........#####.........',
+    '......................',
+    '....CC............CC..',
+    '...####..........####.',
+    '......................',
+    'P.......CC............',
+    '##....######....##....',
+    '####..########..######',
+  ];
+
+  let pTiles, pCoins, pPlayer, pHeartPos, pHeartCollected, pAnim;
+
+  function initPlatformer() {
+    titleEl.textContent = '// heartstealer — i. the leap';
+    msgEl.textContent = 'arrows to move · space to jump';
+    levelEl.textContent = '1';
+    pTiles = []; pCoins = []; pHeartCollected = false;
+    pPlayer = { x: 0, y: 0, vx: 0, vy: 0, w: 28, h: 32, onGround: false, coyote: 0, jumpBuf: 0, facing: 1 };
+    pAnim = makeAnimState();
+    pHeartPos = null;
+
+    for (let r = 0; r < 15; r++) {
+      pTiles[r] = [];
+      for (let c = 0; c < 22; c++) {
+        const ch = (platformLevel[r] && platformLevel[r][c]) || '.';
+        pTiles[r][c] = 0;
+        if (ch === '#') pTiles[r][c] = 1;
+        else if (ch === 'C') pCoins.push({ x: c * TILE + TILE / 2, y: r * TILE + TILE / 2, alive: true, t: Math.random() * 6 });
+        else if (ch === 'P') { pPlayer.x = c * TILE; pPlayer.y = r * TILE; }
+        else if (ch === 'H') pHeartPos = { x: c * TILE + TILE / 2, y: r * TILE + TILE / 2 };
+      }
+    }
+    startTimer(TIME_LIMITS[0]);
+  }
+
+  function pTileAt(px, py) { const c = Math.floor(px / TILE), r = Math.floor(py / TILE); if (c < 0 || c >= 22 || r < 0 || r >= 15) return 1; return pTiles[r][c]; }
+
+  function updatePlatformer() {
+    if (checkTimeUp()) return;
+    const p = pPlayer;
+    const accel = 0.55, fric = 0.82, grav = 0.42, maxVX = 4, jumpF = -11;
+
+    if (keys['ArrowLeft']) { p.vx -= accel; p.facing = -1; }
+    if (keys['ArrowRight']) { p.vx += accel; p.facing = 1; }
+    if (!keys['ArrowLeft'] && !keys['ArrowRight']) { p.vx *= fric; if (Math.abs(p.vx) < 0.15) p.vx = 0; }
+    p.vx = Math.max(-maxVX, Math.min(maxVX, p.vx));
+
+    if (keys[' '] || keys['ArrowUp']) p.jumpBuf = 7; else if (p.jumpBuf > 0) p.jumpBuf--;
+    if (p.onGround) p.coyote = 7; else p.coyote = Math.max(0, p.coyote - 1);
+    if (p.jumpBuf > 0 && p.coyote > 0) { p.vy = jumpF; p.jumpBuf = 0; p.coyote = 0; p.onGround = false; spawnParticles(p.x + p.w / 2, p.y + p.h, '#ff8fa3', 4); }
+    if (p.vy < -2 && !(keys[' '] || keys['ArrowUp'])) p.vy *= 0.85;
+
+    p.vy += grav; if (p.vy > 11) p.vy = 11;
+    p.x += p.vx; p.onGround = false;
+
+    for (let ty = Math.floor(p.y / TILE); ty <= Math.floor((p.y + p.h - 1) / TILE); ty++)
+      for (let tx = Math.floor(p.x / TILE); tx <= Math.floor((p.x + p.w - 1) / TILE); tx++)
+        if (pTileAt(tx * TILE, ty * TILE)) { if (p.vx > 0) p.x = tx * TILE - p.w; else if (p.vx < 0) p.x = (tx + 1) * TILE; p.vx = 0; }
+
+    p.y += p.vy;
+    for (let ty = Math.floor(p.y / TILE); ty <= Math.floor((p.y + p.h - 1) / TILE); ty++)
+      for (let tx = Math.floor(p.x / TILE); tx <= Math.floor((p.x + p.w - 1) / TILE); tx++)
+        if (pTileAt(tx * TILE, ty * TILE)) { if (p.vy > 0) { p.y = ty * TILE - p.h; p.vy = 0; p.onGround = true; } else if (p.vy < 0) { p.y = (ty + 1) * TILE; p.vy = 0; } }
+
+    if (p.y > H + 50) { p.x = 0; p.y = 12 * TILE; p.vx = 0; p.vy = 0; screenShake = 8; }
+
+    // Anim
+    if (!p.onGround) updateAnim(pAnim, 'jump', 6);
+    else if (Math.abs(p.vx) > 0.5) updateAnim(pAnim, 'run', 5);
+    else updateAnim(pAnim, 'idle', 10);
+
+    for (const c of pCoins) { if (!c.alive) continue; c.t += 0.05; const cy = c.y + Math.sin(c.t) * 3; if (p.x < c.x + 10 && p.x + p.w > c.x - 10 && p.y < cy + 10 && p.y + p.h > cy - 10) { c.alive = false; spawnParticles(c.x, cy, '#ffb3c1', 8); } }
+
+    const allCoinsCollected = pCoins.every(c => !c.alive);
+    if (!pHeartCollected && pHeartPos && allCoinsCollected) {
+      const hx = pHeartPos.x, hy = pHeartPos.y;
+      if (p.x < hx + 16 && p.x + p.w > hx - 16 && p.y < hy + 16 && p.y + p.h > hy - 16) {
+        pHeartCollected = true; heartsFound[0] = true; updateHeartUI();
+        spawnParticles(hx, hy, '#ff4d6d', 30); spawnParticles(hx, hy, '#ffb3c1', 20); screenShake = 6;
+        gameState = 'transition';
+        setTimeout(() => { currentLevel = 1; initMaze(); gameState = 'playing'; }, 1200);
+      }
+    }
+  }
+
+  function drawPlatformer() {
+    const t = Date.now();
+    drawBG();
+    ctx.strokeStyle = 'rgba(255, 77, 109, 0.03)';
+    for (let x = 0; x < W; x += TILE) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y < H; y += TILE) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    for (let r = 0; r < 15; r++) for (let c = 0; c < 22; c++) if (pTiles[r][c]) {
+      const x = c * TILE, y = r * TILE;
+      ctx.fillStyle = '#3d1525'; ctx.fillRect(x, y, TILE, TILE);
+      ctx.strokeStyle = '#2a0e1a'; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, TILE - 1, TILE - 1);
+      ctx.fillStyle = 'rgba(255, 77, 109, 0.06)'; ctx.fillRect(x, y, TILE, 2);
+    }
+
+    for (const c of pCoins) { if (!c.alive) continue; const cy = c.y + Math.sin(c.t) * 3; ctx.shadowColor = '#ff8fa3'; ctx.shadowBlur = 8; ctx.fillStyle = '#ff8fa3'; ctx.beginPath(); ctx.arc(c.x, cy, 6, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#ffccd5'; ctx.beginPath(); ctx.arc(c.x, cy, 3, 0, Math.PI * 2); ctx.fill(); }
+
+    if (!pHeartCollected && pHeartPos && pCoins.every(c => !c.alive)) drawHeartPiece(pHeartPos.x, pHeartPos.y - 4, 22, 0, t);
+
+    const p = pPlayer;
+    const sd = sprites.pink[pAnim.anim] || sprites.pink.idle;
+    drawSprite(sd, pAnim.frame, p.x - 10, p.y - 16, p.facing < 0, DRAW_SZ);
+
+    drawTimerBar();
+  }
+
+  // ── LEVEL 2: MAZE ──
+  let mGrid, mCols, mRows, mPlayer, mExit, mHeartCollected, mTrail, mAnim, mFacing;
+  const MC = 28;
+
+  function initMaze() {
+    titleEl.textContent = '// heartstealer — ii. the search';
+    msgEl.textContent = 'arrow keys to navigate the maze';
+    levelEl.textContent = '2';
+    mCols = 19; mRows = 15;
+    canvas.width = mCols * MC; canvas.height = mRows * MC;
+    mHeartCollected = false; mTrail = []; mAnim = makeAnimState(); mFacing = 1;
+
+    mGrid = [];
+    for (let y = 0; y < mRows; y++) { mGrid[y] = []; for (let x = 0; x < mCols; x++) mGrid[y][x] = 0; }
+
+    const visited = new Set(), stack = [];
+    function key(x, y) { return x + ',' + y; }
+    function carve(x, y) {
+      mGrid[y][x] = 1; visited.add(key(x, y)); stack.push({ x, y });
+      while (stack.length) {
+        const cur = stack[stack.length - 1];
+        const nb = [];
+        for (const d of [{ dx: 0, dy: -2 }, { dx: 2, dy: 0 }, { dx: 0, dy: 2 }, { dx: -2, dy: 0 }]) {
+          const nx = cur.x + d.dx, ny = cur.y + d.dy;
+          if (nx > 0 && nx < mCols - 1 && ny > 0 && ny < mRows - 1 && !visited.has(key(nx, ny)))
+            nb.push({ x: nx, y: ny, wx: cur.x + d.dx / 2, wy: cur.y + d.dy / 2 });
+        }
+        if (nb.length) { const next = nb[Math.floor(Math.random() * nb.length)]; mGrid[next.wy][next.wx] = 1; mGrid[next.y][next.x] = 1; visited.add(key(next.x, next.y)); stack.push({ x: next.x, y: next.y }); }
+        else stack.pop();
+      }
+    }
+    carve(1, 1);
+    mPlayer = { x: 1, y: 1 }; mExit = { x: mCols - 2, y: mRows - 2 };
+    mGrid[mExit.y][mExit.x] = 1; mTrail.push({ x: 1, y: 1 });
+    startTimer(TIME_LIMITS[1]);
+  }
+
+  function updateMaze() {
+    if (checkTimeUp()) return;
+    if (!mPlayer._cd) mPlayer._cd = 0;
+    if (mPlayer._cd > 0) { mPlayer._cd--; updateAnim(mAnim, 'run', 5); return; }
+
+    let dx = 0, dy = 0;
+    if (keys['ArrowUp']) dy = -1; else if (keys['ArrowDown']) dy = 1;
+    else if (keys['ArrowLeft']) { dx = -1; mFacing = -1; } else if (keys['ArrowRight']) { dx = 1; mFacing = 1; }
+
+    if (dx === 0 && dy === 0) { updateAnim(mAnim, 'idle', 10); return; }
+    const nx = mPlayer.x + dx, ny = mPlayer.y + dy;
+    if (nx < 0 || nx >= mCols || ny < 0 || ny >= mRows || mGrid[ny][nx] === 0) return;
+
+    mPlayer.x = nx; mPlayer.y = ny; mPlayer._cd = 5;
+    mTrail.push({ x: nx, y: ny });
+    updateAnim(mAnim, 'run', 5);
+
+    if (nx === mExit.x && ny === mExit.y && !mHeartCollected) {
+      mHeartCollected = true; heartsFound[1] = true; updateHeartUI();
+      spawnParticles(nx * MC + MC / 2, ny * MC + MC / 2, '#ff4d6d', 30); screenShake = 6;
+      gameState = 'transition';
+      setTimeout(() => { canvas.width = 720; canvas.height = 480; currentLevel = 2; initDodge(); gameState = 'playing'; }, 1200);
+    }
+  }
+
+  function drawMaze() {
+    const t = Date.now(), cw = mCols * MC, ch = mRows * MC;
+    ctx.fillStyle = '#1a0a10'; ctx.fillRect(0, 0, cw, ch);
+
+    for (let y = 0; y < mRows; y++) for (let x = 0; x < mCols; x++) if (mGrid[y][x] === 0) {
+      ctx.fillStyle = '#3d1525'; ctx.fillRect(x * MC, y * MC, MC, MC);
+      ctx.strokeStyle = '#2a0e1a'; ctx.lineWidth = 0.5; ctx.strokeRect(x * MC + 0.5, y * MC + 0.5, MC - 1, MC - 1);
+    }
+
+    for (let i = 0; i < mTrail.length - 1; i++) { const tr = mTrail[i]; ctx.fillStyle = `rgba(255, 77, 109, ${0.05 + (i / mTrail.length) * 0.12})`; ctx.fillRect(tr.x * MC + 3, tr.y * MC + 3, MC - 6, MC - 6); }
+
+    if (!mHeartCollected) drawHeartPiece(mExit.x * MC + MC / 2, mExit.y * MC + MC / 2 - 2, 16, 1, t);
+
+    // Player sprite in maze
+    const sd = sprites.pink[mAnim.anim] || sprites.pink.idle;
+    drawSprite(sd, mAnim.frame, mPlayer.x * MC + MC / 2 - 14, mPlayer.y * MC + MC / 2 - 14, mFacing < 0, MC);
+
+    drawTimerBar();
+  }
+
+  // ── LEVEL 3: DODGE & CATCH ──
+  let dPlayer, dThorns, dPetals, dHeartPiece, dScore, dHeartCollected, dTimer, dAnim;
+  const PETALS_NEEDED = 20;
+
+  function initDodge() {
+    titleEl.textContent = '// heartstealer — iii. the catch';
+    msgEl.textContent = `catch ${PETALS_NEEDED} rose petals · dodge the thorns`;
+    levelEl.textContent = '3';
+    dPlayer = { x: W / 2 - 16, y: H - 60, w: 32, h: 32, facing: 1 };
+    dThorns = []; dPetals = []; dHeartPiece = null; dHeartCollected = false; dScore = 0; dTimer = 0;
+    dAnim = makeAnimState();
+    startTimer(TIME_LIMITS[2]);
+  }
+
+  function updateDodge() {
+    if (checkTimeUp()) return;
+    dTimer++;
+    const speed = 4.5;
+    if (keys['ArrowLeft']) { dPlayer.x -= speed; dPlayer.facing = -1; }
+    if (keys['ArrowRight']) { dPlayer.x += speed; dPlayer.facing = 1; }
+    dPlayer.x = Math.max(0, Math.min(W - dPlayer.w, dPlayer.x));
+
+    if (keys['ArrowLeft'] || keys['ArrowRight']) updateAnim(dAnim, 'run', 5);
+    else updateAnim(dAnim, 'idle', 10);
+
+    if (dTimer % Math.max(14, 28 - Math.floor(dTimer / 150)) === 0)
+      dThorns.push({ x: Math.random() * (W - 20) + 10, y: -20, vy: 2.5 + Math.random() * 1.5 + dTimer / 800, size: 10 + Math.random() * 8 });
+
+    if (dTimer % 25 === 0)
+      dPetals.push({ x: Math.random() * (W - 16) + 8, y: -16, vy: 1.5 + Math.random() * 1.2, vx: (Math.random() - 0.5) * 1.2, rot: Math.random() * Math.PI * 2, size: 8 + Math.random() * 4 });
+
+    if (dScore >= PETALS_NEEDED && !dHeartPiece && !dHeartCollected) {
+      dHeartPiece = { x: W / 2, y: -30, vy: 1.5 };
+      msgEl.textContent = 'the heart has appeared — catch it!';
+    }
+
+    for (let i = dThorns.length - 1; i >= 0; i--) {
+      dThorns[i].y += dThorns[i].vy;
+      if (dThorns[i].y > H + 30) { dThorns.splice(i, 1); continue; }
+      const th = dThorns[i];
+      if (dPlayer.x < th.x + th.size / 2 && dPlayer.x + dPlayer.w > th.x - th.size / 2 && dPlayer.y < th.y + th.size / 2 && dPlayer.y + dPlayer.h > th.y - th.size / 2) {
+        screenShake = 8; spawnParticles(dPlayer.x + dPlayer.w / 2, dPlayer.y + dPlayer.h / 2, '#88ff88', 15);
+        dThorns.splice(i, 1); dPlayer.x += (Math.random() - 0.5) * 40;
+        dPlayer.x = Math.max(0, Math.min(W - dPlayer.w, dPlayer.x));
+        dScore = Math.max(0, dScore - 3);
+        if (dScore < PETALS_NEEDED && dHeartPiece && !dHeartCollected) { dHeartPiece = null; msgEl.textContent = `catch ${PETALS_NEEDED} rose petals · dodge the thorns`; }
+      }
+    }
+
+    for (let i = dPetals.length - 1; i >= 0; i--) {
+      const pe = dPetals[i]; pe.y += pe.vy; pe.x += pe.vx; pe.rot += 0.03;
+      if (pe.y > H + 20) { dPetals.splice(i, 1); continue; }
+      if (dPlayer.x < pe.x + pe.size && dPlayer.x + dPlayer.w > pe.x - pe.size && dPlayer.y < pe.y + pe.size && dPlayer.y + dPlayer.h > pe.y - pe.size) {
+        dPetals.splice(i, 1); dScore++; spawnParticles(pe.x, pe.y, '#ffb3c1', 5);
+      }
+    }
+
+    if (dHeartPiece && !dHeartCollected) {
+      dHeartPiece.y += dHeartPiece.vy;
+      const hp = dHeartPiece;
+      if (dPlayer.x < hp.x + 18 && dPlayer.x + dPlayer.w > hp.x - 18 && dPlayer.y < hp.y + 18 && dPlayer.y + dPlayer.h > hp.y - 18) {
+        dHeartCollected = true; heartsFound[2] = true; updateHeartUI();
+        spawnParticles(hp.x, hp.y, '#ff4d6d', 40); spawnParticles(hp.x, hp.y, '#ffccd5', 25); screenShake = 8;
+        gameState = 'transition';
+        setTimeout(() => { currentLevel = 3; initBoss(); gameState = 'playing'; }, 1500);
+      }
+      if (hp.y > H + 40) { dHeartPiece.y = -30; dHeartPiece.x = Math.random() * (W - 60) + 30; }
+    }
+  }
+
+  function drawDodge() {
+    const t = Date.now();
+    drawBG();
+
+    ctx.globalAlpha = 0.04;
+    for (let i = 0; i < 8; i++) { const bx = (t / (20 + i * 5) + i * 100) % (W + 40) - 20, by = (t / (15 + i * 3) + i * 80) % (H + 40) - 20; ctx.fillStyle = '#ff4d6d'; ctx.beginPath(); ctx.arc(bx, by, 3, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+
+    for (const th of dThorns) { ctx.save(); ctx.translate(th.x, th.y); ctx.strokeStyle = '#44aa44'; ctx.lineWidth = 3; ctx.shadowColor = '#44aa44'; ctx.shadowBlur = 6; const s = th.size / 2; ctx.beginPath(); ctx.moveTo(-s, -s); ctx.lineTo(s, s); ctx.stroke(); ctx.beginPath(); ctx.moveTo(s, -s); ctx.lineTo(-s, s); ctx.stroke(); ctx.shadowBlur = 0; ctx.fillStyle = '#66cc66'; ctx.beginPath(); ctx.arc(0, 0, 2.5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+
+    for (const pe of dPetals) { ctx.save(); ctx.translate(pe.x, pe.y); ctx.rotate(pe.rot); ctx.fillStyle = '#ffb3c1'; ctx.shadowColor = '#ff8fa3'; ctx.shadowBlur = 6; ctx.beginPath(); ctx.ellipse(0, 0, pe.size, pe.size * 0.6, 0, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#ffccd5'; ctx.beginPath(); ctx.ellipse(0, 0, pe.size * 0.4, pe.size * 0.25, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+
+    if (dHeartPiece && !dHeartCollected) drawHeartPiece(dHeartPiece.x, dHeartPiece.y, 22, 2, t);
+
+    const sd = sprites.pink[dAnim.anim] || sprites.pink.idle;
+    drawSprite(sd, dAnim.frame, dPlayer.x - 8, dPlayer.y - 8, dPlayer.facing < 0, DRAW_SZ);
+
+    ctx.fillStyle = '#ff8fa3'; ctx.font = '13px "Source Code Pro"'; ctx.globalAlpha = 0.7;
+    ctx.fillText(`petals: ${dScore} / ${PETALS_NEEDED}`, 12, 28); ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(255, 77, 109, 0.15)'; ctx.fillRect(12, 34, 140, 6);
+    ctx.fillStyle = dScore >= PETALS_NEEDED ? '#ff4d6d' : '#ff8fa3'; ctx.fillRect(12, 34, 140 * Math.min(1, dScore / PETALS_NEEDED), 6);
+
+    drawTimerBar();
+  }
+
+  // ── LEVEL 4: BOSS FIGHT ──
+  let bPlayer, bBoss, bPlayerAnim, bBossAnim, bProjectiles, bBossTimer, bBossPhase, bHealthDrops, bHealthDropSchedule;
+  const BOSS_HP = 12;
+  const GROUND_Y = H - 64;
+
+  function initBoss() {
+    titleEl.textContent = '// heartstealer — iv. the duel';
+    msgEl.textContent = 'Z to attack · arrows to move · space to jump';
+    levelEl.textContent = '4';
+    canvas.width = 720; canvas.height = 480;
+
+    bPlayer = { x: 100, y: GROUND_Y, vx: 0, vy: 0, w: 28, h: 32, onGround: true, facing: 1, hp: 5, maxHp: 5, attacking: false, atkTimer: 0, hurtTimer: 0, iframes: 0 };
+    bBoss = { x: W - 180, y: GROUND_Y, w: 40, h: 40, hp: BOSS_HP, maxHp: BOSS_HP, facing: -1, state: 'idle', stateTimer: 0, attacking: false, atkTimer: 0, hurtTimer: 0, vx: 0, vy: 0, onGround: true, chargeDir: 0 };
+    bPlayerAnim = makeAnimState();
+    bBossAnim = makeAnimState();
+    bProjectiles = [];
+    bBossTimer = 0;
+    bBossPhase = 0;
+    bHealthDrops = [];
+    bHealthDropSchedule = [300, 600, 900]; // frames at which health drops spawn (roughly 5s, 10s, 15s)
+    startTimer(TIME_LIMITS[3]);
+  }
+
+  function updateBoss() {
+    if (checkTimeUp()) return;
+    const p = bPlayer, b = bBoss;
+    bBossTimer++;
+
+    // ── Player movement ──
+    const accel = 0.6, fric = 0.82, grav = 0.5, maxVX = 4.5, jumpF = -10.5;
+    if (p.hurtTimer <= 0) {
+      if (keys['ArrowLeft']) { p.vx -= accel; p.facing = -1; }
+      if (keys['ArrowRight']) { p.vx += accel; p.facing = 1; }
+    }
+    if (!keys['ArrowLeft'] && !keys['ArrowRight']) { p.vx *= fric; if (Math.abs(p.vx) < 0.15) p.vx = 0; }
+    p.vx = Math.max(-maxVX, Math.min(maxVX, p.vx));
+
+    if ((keys[' '] || keys['ArrowUp']) && p.onGround && p.hurtTimer <= 0) { p.vy = jumpF; p.onGround = false; }
+    p.vy += grav; if (p.vy > 12) p.vy = 12;
+    p.x += p.vx; p.y += p.vy;
+    if (p.y >= GROUND_Y) { p.y = GROUND_Y; p.vy = 0; p.onGround = true; }
+    p.x = Math.max(0, Math.min(W - p.w, p.x));
+
+    // Player attack
+    if ((keys['z'] || keys['Z']) && !p.attacking && p.hurtTimer <= 0) {
+      p.attacking = true; p.atkTimer = 20;
+    }
+    if (p.attacking) {
+      p.atkTimer--;
+      if (p.atkTimer <= 0) p.attacking = false;
+      // Hit check on boss
+      if (p.atkTimer === 15 && b.hurtTimer <= 0) {
+        const atkX = p.facing > 0 ? p.x + p.w : p.x - 30;
+        const atkW = 30;
+        if (atkX < b.x + b.w && atkX + atkW > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
+          b.hp--;
+          b.hurtTimer = 20;
+          b.vx = p.facing * 3;
+          screenShake = 6;
+          spawnParticles(b.x + b.w / 2, b.y + b.h / 2, '#aaddff', 15);
+          if (b.hp <= 0) {
+            b.state = 'dead'; b.stateTimer = 60;
+            gameState = 'transition';
+            setTimeout(showWinScreen, 2000);
+          }
+        }
+      }
+    }
+
+    if (p.hurtTimer > 0) p.hurtTimer--;
+    if (p.iframes > 0) p.iframes--;
+
+    // Player anim
+    if (p.hurtTimer > 0) updateAnim(bPlayerAnim, 'hurt', 6);
+    else if (p.attacking) updateAnim(bPlayerAnim, 'attack', 5);
+    else if (!p.onGround) updateAnim(bPlayerAnim, 'jump', 6);
+    else if (Math.abs(p.vx) > 0.5) updateAnim(bPlayerAnim, 'run', 5);
+    else updateAnim(bPlayerAnim, 'idle', 10);
+
+    // ── Boss AI ──
+    if (b.hp > 0) {
+      b.facing = p.x < b.x ? -1 : 1;
+      b.vy += grav; if (b.vy > 12) b.vy = 12;
+      b.x += b.vx; b.y += b.vy;
+      if (b.y >= GROUND_Y) { b.y = GROUND_Y; b.vy = 0; b.onGround = true; }
+      b.x = Math.max(0, Math.min(W - b.w, b.x));
+      b.vx *= 0.9;
+      if (b.hurtTimer > 0) { b.hurtTimer--; updateAnim(bBossAnim, 'hurt', 6); }
+      else {
+        b.stateTimer--;
+        if (b.stateTimer <= 0) {
+          // Pick action
+          const dist = Math.abs(p.x - b.x);
+          const r = Math.random();
+          if (dist < 80 && r < 0.5) {
+            b.state = 'attack'; b.stateTimer = 30; b.attacking = true; b.atkTimer = 30;
+          } else if (r < 0.7) {
+            b.state = 'charge'; b.stateTimer = 40; b.chargeDir = b.facing;
+          } else {
+            b.state = 'idle'; b.stateTimer = 30 + Math.floor(Math.random() * 30);
+          }
+        }
+
+        if (b.state === 'charge') {
+          b.vx = b.chargeDir * 3;
+          updateAnim(bBossAnim, 'run', 4);
+        } else if (b.state === 'attack') {
+          b.atkTimer--;
+          updateAnim(bBossAnim, 'attack', 5);
+          if (b.atkTimer === 15 && p.iframes <= 0) {
+            const atkX = b.facing > 0 ? b.x + b.w : b.x - 30;
+            if (atkX < p.x + p.w && atkX + 30 > p.x && b.y < p.y + p.h && b.y + b.h > p.y) {
+              p.hp--; p.hurtTimer = 15; p.iframes = 40;
+              p.vx = -b.facing * 5; p.vy = -4;
+              screenShake = 8; spawnParticles(p.x + p.w / 2, p.y + p.h / 2, '#ff4d6d', 12);
+              if (p.hp <= 0) {
+                gameState = 'transition';
+                showOverlay('defeated', 'the owlet monster won...', 'try again', () => { initBoss(); gameState = 'playing'; });
+              }
+            }
+          }
+          if (b.atkTimer <= 0) b.attacking = false;
+        } else {
+          // Idle — walk toward player slowly
+          const dir = p.x < b.x ? -1 : 1;
+          b.vx = dir * 0.8;
+          updateAnim(bBossAnim, 'idle', 10);
+        }
+      }
+    } else {
+      // Dead
+      updateAnim(bBossAnim, 'death', 6);
+      b.vx *= 0.9;
+    }
+
+    // Health drops
+    if (bHealthDropSchedule.length > 0 && bBossTimer >= bHealthDropSchedule[0]) {
+      bHealthDropSchedule.shift();
+      bHealthDrops.push({ x: 80 + Math.random() * (W - 160), y: -20, vy: 1.8, alive: true, bob: Math.random() * 6 });
+    }
+    for (let i = bHealthDrops.length - 1; i >= 0; i--) {
+      const hd = bHealthDrops[i];
+      if (!hd.alive) continue;
+      hd.y += hd.vy; hd.bob += 0.05;
+      if (hd.y > H + 30) { hd.alive = false; continue; }
+      // Lands on ground
+      if (hd.y >= GROUND_Y) { hd.y = GROUND_Y; hd.vy = 0; }
+      // Player pickup
+      if (p.x < hd.x + 14 && p.x + p.w > hd.x - 14 && p.y < hd.y + 14 && p.y + p.h > hd.y - 14) {
+        hd.alive = false;
+        if (p.hp < p.maxHp) { p.hp++; spawnParticles(hd.x, hd.y, '#44ff88', 12); }
+        else spawnParticles(hd.x, hd.y, '#ffb3c1', 6);
+      }
+    }
+
+    // Contact damage
+    if (p.iframes <= 0 && b.hp > 0) {
+      if (p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
+        p.hp--; p.hurtTimer = 15; p.iframes = 40;
+        p.vx = (p.x < b.x ? -1 : 1) * 5; p.vy = -4;
+        screenShake = 6; spawnParticles(p.x + p.w / 2, p.y + p.h / 2, '#ff4d6d', 8);
+        if (p.hp <= 0) {
+          gameState = 'transition';
+          showOverlay('defeated', 'the owlet monster won...', 'try again', () => { initBoss(); gameState = 'playing'; });
+        }
+      }
+    }
+  }
+
+  function drawBoss() {
+    const t = Date.now();
+    drawBG();
+
+    // Ground
+    ctx.fillStyle = '#3d1525';
+    ctx.fillRect(0, GROUND_Y + 32, W, H - GROUND_Y);
+    ctx.fillStyle = 'rgba(255, 77, 109, 0.08)';
+    ctx.fillRect(0, GROUND_Y + 32, W, 2);
+
+    // Boss
+    const b = bBoss;
+    if (b.hp > 0 || bBossAnim.anim === 'death') {
+      const bFlash = b.hurtTimer > 0 && b.hurtTimer % 4 < 2;
+      if (!bFlash) {
+        const osd = sprites.owlet[bBossAnim.anim] || sprites.owlet.idle;
+        drawSprite(osd, bBossAnim.frame, b.x - 16, b.y - 20, b.facing < 0, 64);
+      }
+    }
+
+    // Boss HP bar
+    if (b.hp > 0) {
+      const bw = 80, bh = 6, bx = b.x + b.w / 2 - bw / 2, by = b.y - 30;
+      ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(bx, by, bw, bh);
+      ctx.fillStyle = '#6699cc'; ctx.fillRect(bx, by, bw * (b.hp / b.maxHp), bh);
+    }
+
+    // Player
+    const p = bPlayer;
+    const pFlash = p.iframes > 0 && p.iframes % 4 < 2;
+    if (!pFlash) {
+      const psd = sprites.pink[bPlayerAnim.anim] || sprites.pink.idle;
+      drawSprite(psd, bPlayerAnim.frame, p.x - 10, p.y - 16, p.facing < 0, DRAW_SZ);
+    }
+
+    // Attack range indicator
+    if (p.attacking && p.atkTimer > 12) {
+      const ax = p.facing > 0 ? p.x + p.w : p.x - 30;
+      ctx.fillStyle = 'rgba(255, 77, 109, 0.2)';
+      ctx.fillRect(ax, p.y, 30, p.h);
+    }
+
+    // Health drops
+    for (const hd of bHealthDrops) {
+      if (!hd.alive) continue;
+      const hdBob = Math.sin(hd.bob) * 3;
+      ctx.save();
+      ctx.shadowColor = '#44ff88'; ctx.shadowBlur = 10;
+      drawHeart(hd.x, hd.y - 6 + hdBob, 14, '#44ff88', 8);
+      ctx.shadowBlur = 0;
+      // Plus sign
+      ctx.fillStyle = '#ffffff'; ctx.globalAlpha = 0.9;
+      ctx.fillRect(hd.x - 4, hd.y - 8 + hdBob, 8, 2);
+      ctx.fillRect(hd.x - 1, hd.y - 11 + hdBob, 2, 8);
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
+    // Player HP
+    ctx.fillStyle = '#ff8fa3'; ctx.font = '13px "Source Code Pro"'; ctx.globalAlpha = 0.8;
+    for (let i = 0; i < p.maxHp; i++) {
+      const hx = 12 + i * 22, hy = 22;
+      if (i < p.hp) drawHeart(hx + 8, hy, 12, '#ff4d6d', 4);
+      else drawHeart(hx + 8, hy, 12, 'rgba(255,77,109,0.2)', 0);
+    }
+    ctx.globalAlpha = 1;
+
+    // Boss name
+    if (b.hp > 0) {
+      ctx.fillStyle = '#6699cc'; ctx.font = '11px "Source Code Pro"'; ctx.globalAlpha = 0.6;
+      ctx.fillText('owlet monster', b.x + b.w / 2 - 40, b.y - 36);
+      ctx.globalAlpha = 1;
+    }
+
+    drawTimerBar();
+  }
+
+  // ── WIN SCREEN ──
+  function showWinScreen() {
+    gameState = 'won';
+    const ov = document.createElement('div');
+    ov.className = 'overlay';
+
+    const heartCanvas = document.createElement('canvas');
+    heartCanvas.width = 200; heartCanvas.height = 160;
+    const hctx = heartCanvas.getContext('2d');
+
+    let frame = 0;
+    function animateHeart() {
+      hctx.clearRect(0, 0, 200, 160); frame++;
+      const progress = Math.min(1, frame / 60);
+      hctx.save(); hctx.shadowColor = '#ff4d6d'; hctx.shadowBlur = 20 * progress;
+      hctx.fillStyle = `rgba(255, 77, 109, ${progress})`; hctx.beginPath();
+      const cx = 100, cy = 70, s = 50 * progress;
+      hctx.moveTo(cx, cy + s * 0.3);
+      hctx.bezierCurveTo(cx, cy - s * 0.1, cx - s * 0.5, cy - s * 0.4, cx - s * 0.5, cy);
+      hctx.bezierCurveTo(cx - s * 0.5, cy + s * 0.3, cx, cy + s * 0.55, cx, cy + s * 0.7);
+      hctx.bezierCurveTo(cx, cy + s * 0.55, cx + s * 0.5, cy + s * 0.3, cx + s * 0.5, cy);
+      hctx.bezierCurveTo(cx + s * 0.5, cy - s * 0.4, cx, cy - s * 0.1, cx, cy + s * 0.3);
+      hctx.fill(); hctx.restore();
+      if (frame < 90) requestAnimationFrame(animateHeart);
+    }
+
+    const poemLines = [
+      'i searched through every level,',
+      'through mazes, leaps, and fights —',
+      'caught petals in the falling dark,',
+      'chased hearts through pixel nights.',
+      '',
+      'but nancy, here\'s the secret:',
+      'no code could make this true —',
+      'the only heart i ever wanted',
+      'was already next to you.',
+    ];
+
+    let poemHTML = '<div class="poem-container">';
+    poemLines.forEach((line, i) => {
+      if (line === '') poemHTML += '<br/>';
+      else poemHTML += `<div class="poem-line" style="animation-delay: ${1.5 + i * 0.35}s">${line}</div>`;
+    });
+    poemHTML += '</div>';
+
+    ov.innerHTML = `
+      <h2>heart restored</h2>
+      ${poemHTML}
+      <p style="opacity:0.5; font-size: 0.75rem; animation: fadeInLine 0.6s ease forwards; animation-delay: ${1.5 + poemLines.length * 0.35}s; opacity: 0;">happy valentine's day, nancy</p>
+      <button style="animation: fadeInLine 0.6s ease forwards; animation-delay: ${2 + poemLines.length * 0.35}s; opacity: 0;">play again</button>
+    `;
+    ov.insertBefore(heartCanvas, ov.querySelector('.poem-container'));
+    document.body.appendChild(ov);
+    animateHeart();
+
+    ov.querySelector('button').onclick = () => {
+      ov.remove();
+      heartsFound = [false, false, false]; updateHeartUI();
+      currentLevel = 0; canvas.width = 720; canvas.height = 480;
+      initPlatformer(); gameState = 'playing';
+    };
+  }
+
+  // ── MAIN LOOP ──
+  function update() {
+    if (gameState !== 'playing') return;
+    if (currentLevel === 0) updatePlatformer();
+    else if (currentLevel === 1) updateMaze();
+    else if (currentLevel === 2) updateDodge();
+    else if (currentLevel === 3) updateBoss();
+    updateParticles(); updateTimerDisplay();
+    if (screenShake > 0) screenShake--;
+  }
+
+  function draw() {
+    ctx.save();
+    if (screenShake > 0) ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+    if (currentLevel === 0) drawPlatformer();
+    else if (currentLevel === 1) drawMaze();
+    else if (currentLevel === 2) drawDodge();
+    else if (currentLevel === 3) drawBoss();
+    drawParticles(); ctx.restore();
+  }
+
+  function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+  // ── INIT ── (handled by login screen → startGame())
+  </script>
+</body>
+</html>
