@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% if page.title %}{{ page.title | strip_html }} &#8211; {% endif %}{{ site.title | strip_html }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ site.description | xml_escape }}">
+    <meta name="author" content="{{ site.author }}">
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for {{ site.title }}" href="{{ "/feed.xml" | relative_url }}" />
+    <link rel="shortcut icon" href="{{ "/favicon.ico" | relative_url }}">
+    <link rel="icon" type="image/png" href="{{ "/favicon-32x32.png" | relative_url }}" sizes="32x32">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,300;1,8..60,400&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+      // Apply theme immediately to prevent flash
+      (function() {
+        var theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+
+    <style>
+      /* ============================================
+         Gwern-inspired theme — retro academic style
+         ============================================ */
+
+      /* --- CSS Variables --- */
+      :root {
+        /* Dark theme (default) */
+        --bg:           #181818;
+        --bg-nav:       #111111;
+        --bg-card:      #1f1f1f;
+        --text:         #d4d4d4;
+        --text-dim:     #999999;
+        --text-bright:  #f0f0f0;
+        --border:       #333333;
+        --link:         #8ab4f8;
+        --link-hover:   #aecbfa;
+        --link-visited: #c58af9;
+        --accent:       #8ab4f8;
+        --tag-bg:       #2a2a2a;
+        --tag-border:   #444444;
+        --toggle-bg:    #333333;
+      }
+
+      [data-theme="light"] {
+        --bg:           #fffff8;
+        --bg-nav:       #f0f0e8;
+        --bg-card:      #fffff8;
+        --text:         #1a1a1a;
+        --text-dim:     #555555;
+        --text-bright:  #000000;
+        --border:       #cccccc;
+        --link:         #1a0dab;
+        --link-hover:   #0000cc;
+        --link-visited: #681da8;
+        --accent:       #1a0dab;
+        --tag-bg:       #f0f0e8;
+        --tag-border:   #cccccc;
+        --toggle-bg:    #dddddd;
+      }
+
+      /* --- Reset & Base --- */
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 17px;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: 'Source Serif 4', 'Georgia', 'Times New Roman', serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      /* --- Top Navigation Bar (Gwern-style) --- */
+      .top-nav {
+        background: var(--bg-nav);
+        border-bottom: 1px solid var(--border);
+        padding: 0.6rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .top-nav-inner {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .top-nav .nav-brand {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-bright);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+      }
+
+      .top-nav .nav-brand:hover {
+        color: var(--accent);
+      }
+
+      .top-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .top-nav-links a {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-dim);
+        text-decoration: none;
+        padding: 0.4rem 0.7rem;
+        border-radius: 3px;
+        transition: color 0.15s, background-color 0.15s;
+      }
+
+      .top-nav-links a:hover {
+        color: var(--text-bright);
+        background-color: var(--toggle-bg);
+      }
+
+      /* Theme toggle in nav */
+      .theme-btn {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: var(--toggle-bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 0.3rem 0.65rem;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-left: 0.5rem;
+        transition: background-color 0.15s, color 0.15s;
+      }
+
+      .theme-btn:hover {
+        background: var(--accent);
+        color: var(--bg);
+      }
+
+      /* --- Main Container --- */
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* --- Intro / Hero --- */
+      .intro {
+        margin: 2.5rem 0 3rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .intro p {
+        font-size: 1.05rem;
+        line-height: 1.85;
+        color: var(--text);
+      }
+
+      .intro p strong {
+        color: var(--text-bright);
+        font-weight: 600;
+      }
+
+      .intro a {
+        color: var(--link);
+      }
+
+      /* --- Section Headings (Gwern small-caps style) --- */
+      .section-heading {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-variant: small-caps;
+        text-transform: lowercase;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--text-bright);
+        margin: 3rem 0 1.2rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border);
+      }
+
+      /* --- Links (readable, Gwern-style) --- */
+      a {
+        color: var(--link);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: color 0.15s, border-color 0.15s;
+      }
+
+      a:hover {
+        color: var(--link-hover);
+        border-bottom-color: var(--link-hover);
+      }
+
+      a:visited {
+        color: var(--link-visited);
+      }
+
+      /* --- News List --- */
+      .news-list {
+        list-style: none;
+      }
+
+      .news-list li {
+        display: flex;
+        gap: 1.5rem;
+        padding: 0.45rem 0;
+        line-height: 1.6;
+      }
+
+      .news-list .year {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-dim);
+        min-width: 3.5rem;
+        flex-shrink: 0;
+      }
+
+      .news-list .desc {
+        color: var(--text);
+      }
+
+      /* --- Two-Column Grid (Gwern Newest/Popular style) --- */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+        margin-top: 1.2rem;
+      }
+
+      .col-heading {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-variant: small-caps;
+        text-transform: lowercase;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--text-bright);
+        margin-bottom: 0.8rem;
+      }
+
+      .link-list {
+        list-style: none;
+      }
+
+      .link-list li {
+        padding: 0.3rem 0;
+        line-height: 1.5;
+      }
+
+      .link-list li::before {
+        content: "\2727 ";
+        color: var(--text-dim);
+        margin-right: 0.4rem;
+        font-size: 0.85rem;
+      }
+
+      .link-list a {
+        font-size: 0.98rem;
+      }
+
+      /* --- Project Cards --- */
+      .project {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .project:last-child {
+        border-bottom: none;
+      }
+
+      .project h3 {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        color: var(--text-bright);
+      }
+
+      .project h3 a {
+        color: var(--text-bright);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .project h3 a:hover {
+        color: var(--link);
+        border-bottom-color: var(--link);
+      }
+
+      .project .meta {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        margin-bottom: 0.6rem;
+      }
+
+      .project p {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: var(--text);
+      }
+
+      .tags {
+        margin-top: 0.6rem;
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: var(--tag-bg);
+        border: 1px solid var(--tag-border);
+        color: var(--text-dim);
+        padding: 0.2rem 0.55rem;
+        border-radius: 2px;
+      }
+
+      /* --- Writing List --- */
+      .writing-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.4rem 0;
+      }
+
+      .writing-item a {
+        font-size: 0.98rem;
+      }
+
+      .writing-item .date {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        flex-shrink: 0;
+        margin-left: 1rem;
+      }
+
+      /* --- Footer --- */
+      .site-footer {
+        margin-top: 3rem;
+        padding: 1.5rem 0;
+        border-top: 2px solid var(--border);
+        text-align: center;
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-dim);
+      }
+
+      .site-footer p {
+        margin: 0.3rem 0;
+      }
+
+      .site-footer a {
+        color: var(--text-dim);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .site-footer a:hover {
+        color: var(--link);
+      }
+
+      .site-footer .colophon {
+        font-style: italic;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-size: 0.82rem;
+      }
+
+      /* --- Paper Table --- */
+      .paper-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .paper-table tr {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .paper-table tr:last-child {
+        border-bottom: none;
+      }
+
+      .paper-table td {
+        padding: 0.75rem 0;
+        vertical-align: top;
+      }
+
+      .paper-year {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--text-dim);
+        width: 3.5rem;
+        padding-right: 1rem !important;
+        white-space: nowrap;
+      }
+
+      .paper-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .paper-title {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--link) !important;
+        border-bottom: none !important;
+      }
+
+      .paper-title:hover {
+        color: var(--link-hover) !important;
+        border-bottom: 1px solid var(--link-hover) !important;
+      }
+
+      .paper-authors {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        line-height: 1.4;
+      }
+
+      .paper-authors strong {
+        color: var(--text-bright);
+        font-weight: 600;
+      }
+
+      .paper-venue {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        font-style: italic;
+      }
+
+      .paper-cite {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        text-align: right;
+        width: 3rem;
+        padding-left: 1rem !important;
+        white-space: nowrap;
+      }
+
+      .paper-cite:not(:empty)::after {
+        content: " cited";
+        font-size: 0.7rem;
+        opacity: 0.7;
+      }
+
+      /* --- Hover Preview Popup (Gwern-style) --- */
+      .preview-popup {
+        position: absolute;
+        z-index: 9999;
+        width: 360px;
+        max-width: 90vw;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        padding: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        font-size: 0.88rem;
+        line-height: 1.55;
+      }
+
+      .preview-popup.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .preview-popup-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.45rem 0.7rem;
+        background: var(--bg-nav);
+        border-bottom: 1px solid var(--border);
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-bright);
+      }
+
+      .preview-popup-header .popup-controls {
+        display: flex;
+        gap: 0.4rem;
+        color: var(--text-dim);
+        font-size: 0.72rem;
+      }
+
+      .preview-popup-header .popup-controls span {
+        cursor: default;
+        opacity: 0.5;
+      }
+
+      .preview-popup-body {
+        padding: 0.8rem 0.9rem;
+      }
+
+      .preview-popup-body .popup-title {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-bright);
+        margin-bottom: 0.25rem;
+      }
+
+      .preview-popup-body .popup-meta {
+        font-family: 'Source Sans 3', 'Helvetica Neue', sans-serif;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        font-style: italic;
+        margin-bottom: 0.55rem;
+      }
+
+      .preview-popup-body .popup-excerpt {
+        color: var(--text);
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+
+      /* --- Responsive --- */
+      @media (max-width: 640px) {
+        html { font-size: 15px; }
+
+        .top-nav-inner {
+          flex-wrap: wrap;
+          gap: 0.4rem;
+        }
+
+        .top-nav-links {
+          flex-wrap: wrap;
+          gap: 0;
+        }
+
+        .two-col {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .news-list li {
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+
+        .writing-item {
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+
+        .writing-item .date {
+          margin-left: 0;
+        }
+      }
+    </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="/" class="nav-brand">{{ site.title }}</a>
+      <div class="top-nav-links">
+        <a href="#news">News</a>
+        <a href="#papers">Papers</a>
+        <a href="#projects">Projects</a>
+        <a href="#writing">Writing</a>
+        <a href="/about">About</a>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme">
+          <span id="theme-label">Light</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    {{ content }}
+  </main>
+
+  <script>
+    // Theme toggle
+    (function() {
+      var toggle = document.getElementById('theme-toggle');
+      var label = document.getElementById('theme-label');
+      var html = document.documentElement;
+
+      function updateLabel() {
+        var current = html.getAttribute('data-theme');
+        label.textContent = current === 'dark' ? '☼ Light' : '☽ Dark';
+      }
+
+      updateLabel();
+
+      toggle.addEventListener('click', function() {
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateLabel();
+      });
+    })();
+
+    // Gwern-style hover preview popups
+    (function() {
+      var popup = document.createElement('div');
+      popup.className = 'preview-popup';
+      popup.innerHTML =
+        '<div class="preview-popup-header">' +
+          '<span class="popup-header-title"></span>' +
+          '<span class="popup-controls">' +
+            '<span>\u2716</span> <span>\u2b1a</span> <span>\u2b12</span> <span>\u2197</span>' +
+          '</span>' +
+        '</div>' +
+        '<div class="preview-popup-body">' +
+          '<div class="popup-title"></div>' +
+          '<div class="popup-meta"></div>' +
+          '<div class="popup-excerpt"></div>' +
+        '</div>';
+      document.body.appendChild(popup);
+
+      var headerTitle = popup.querySelector('.popup-header-title');
+      var popupTitle = popup.querySelector('.popup-title');
+      var popupMeta = popup.querySelector('.popup-meta');
+      var popupExcerpt = popup.querySelector('.popup-excerpt');
+
+      var hideTimeout;
+      var showTimeout;
+
+      function positionPopup(link) {
+        var rect = link.getBoundingClientRect();
+        var scrollY = window.scrollY || window.pageYOffset;
+        var scrollX = window.scrollX || window.pageXOffset;
+        var popupW = 360;
+        var popupH = popup.offsetHeight || 200;
+
+        // Try to position to the right of the link
+        var left = rect.right + scrollX + 12;
+        var top = rect.top + scrollY - 10;
+
+        // If it goes off the right edge, position to the left
+        if (left + popupW > window.innerWidth + scrollX - 20) {
+          left = rect.left + scrollX - popupW - 12;
+        }
+
+        // If still off screen, center below
+        if (left < scrollX + 10) {
+          left = rect.left + scrollX;
+          top = rect.bottom + scrollY + 8;
+        }
+
+        // Don't go below viewport
+        if (top + popupH > scrollY + window.innerHeight) {
+          top = scrollY + window.innerHeight - popupH - 20;
+        }
+
+        popup.style.left = left + 'px';
+        popup.style.top = top + 'px';
+      }
+
+      function showPopup(link) {
+        clearTimeout(hideTimeout);
+
+        var title = link.getAttribute('data-title');
+        var meta = link.getAttribute('data-meta');
+        var preview = link.getAttribute('data-preview');
+
+        if (!title && !preview) return;
+
+        headerTitle.textContent = title || '';
+        popupTitle.textContent = title || '';
+        popupMeta.innerHTML = meta || '';
+        popupExcerpt.textContent = preview || '';
+
+        popup.classList.add('visible');
+        positionPopup(link);
+      }
+
+      function hidePopup() {
+        hideTimeout = setTimeout(function() {
+          popup.classList.remove('visible');
+        }, 200);
+      }
+
+      // Attach to all preview links
+      var links = document.querySelectorAll('.preview-link');
+      links.forEach(function(link) {
+        link.addEventListener('mouseenter', function() {
+          clearTimeout(hideTimeout);
+          showTimeout = setTimeout(function() {
+            showPopup(link);
+          }, 300);
+        });
+
+        link.addEventListener('mouseleave', function() {
+          clearTimeout(showTimeout);
+          hidePopup();
+        });
+      });
+
+      // Keep popup visible when hovering over it
+      popup.addEventListener('mouseenter', function() {
+        clearTimeout(hideTimeout);
+      });
+
+      popup.addEventListener('mouseleave', function() {
+        hidePopup();
+      });
+    })();
+  </script>
+
+</body>
+</html>

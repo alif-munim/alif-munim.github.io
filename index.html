@@ -1,182 +1,397 @@
 ---
-layout: default
+layout: gwern
 ---
 
-<div class="post">
-  <article class="post-content">
+<!-- Introduction -->
+<section class="intro">
+  <p>
+    This is the website of <strong>Alif Munim</strong>. I am a machine learning specialist
+    at the <a href="https://www.uhn.ca/">University Health Network</a>, building AI foundation
+    models for cardiology &amp; clinical trial matching. I am best known for my work on
+    <a href="/research/2025/02/07/echojepa/" class="preview-link"
+       data-title="EchoJEPA"
+       data-meta="2025 &middot; foundation models, echocardiography, self-supervised learning"
+       data-preview="A latent predictive foundation model for cardiac ultrasound, trained on 18M videos from 300K patients at UHN. Predicts in abstract representation space rather than reconstructing pixels, naturally filtering speckle noise. 20% lower error on cardiac function estimation vs. best existing foundation model.">EchoJEPA</a>;
+    <a href="/research/medical-imaging/2022/05/15/brain-mri-segmentation/" class="preview-link"
+       data-title="Brain MRI Segmentation"
+       data-meta="2022 &middot; segmentation, U-Net, MRI, computer vision"
+       data-preview="Comparing U-Nets, fully convolutional networks, and gradient-boosted ensembles for segmenting brain metastases in small MRI datasets (<100 3D scans), at TMU's Maternal-Fetal Imaging Laboratory.">medical image segmentation</a>;
+    and <a href="/ai-safety/community/2024/01/15/ai-safety-cohere-labs/" class="preview-link"
+       data-title="AI Safety &amp; Alignment at Cohere Labs"
+       data-meta="2024 &middot; AI safety, alignment, interpretability, governance"
+       data-preview="Leading Cohere Labs' AI Safety & Alignment community. 12+ speaker sessions on mechanistic interpretability, AI governance, and responsible AI with researchers from Anthropic, UK AISI, and Encode AI.">AI safety &amp; alignment</a>.
+  </p>
+  <p>
+    Previously, I worked at <a href="https://www.ibm.com/">IBM</a> on
+    <a href="/research/nlp/2021/08/01/email-speech-acts/" class="preview-link"
+       data-title="Email Speech Act Classification"
+       data-meta="2021 &middot; NLP, speech acts, word embeddings, IBM"
+       data-preview="A UofT-IBM collaboration applying speech-act theory to deep learning for email intent classification. Contributed to IBM Watson Orchestrate, winner of a CES 2022 Innovation Award.">Watson Orchestrate</a>
+    &amp; Watson AIOps; interned at the <a href="https://vectorinstitute.ai/">Vector Institute</a>;
+    and conducted research at the <a href="https://www.utoronto.ca/">University of Toronto</a>
+    &amp; <a href="https://www.torontomu.ca/">Toronto Metropolitan University</a>.
+    I graduated with distinction from TMU's CS co-op program with a minor in psychology.
+    I also serve as Community Lead for AI Safety &amp; Alignment at
+    <a href="https://cohere.com/research">Cohere Labs</a>.
+  </p>
+</section>
 
-    <div style="text-align:center;">
-      <img src="{{ site.baseurl }}/images/me.jpg" alt="Alif Munim"
-        style="
-          width: 8rem;
-          border-radius: 50%;
-        "/>
-    </div>
+<!-- News -->
+<h2 id="news" class="section-heading">News</h2>
+<ul class="news-list">
+  <li>
+    <span class="year">2025</span>
+    <span class="desc">Speaking at <a href="https://hmai.group/">Harvard Medical AI Speaker Series</a> on EchoJEPA (Feb 19)</span>
+  </li>
+  <li>
+    <span class="year">2025</span>
+    <span class="desc"><a href="https://echojepa.com">EchoJEPA</a> trends on X/Twitter with ~500K impressions in 24 hours</span>
+  </li>
+  <li>
+    <span class="year">2025</span>
+    <span class="desc">Released <a href="https://arxiv.org/abs/2602.02603">EchoJEPA</a>, trained on 18M cardiac ultrasound videos from 300K patients</span>
+  </li>
+  <li>
+    <span class="year">2024</span>
+    <span class="desc">Promoted to Machine Learning Specialist at <a href="https://www.uhn.ca/">UHN</a></span>
+  </li>
+  <li>
+    <span class="year">2024</span>
+    <span class="desc">1-year anniversary as AI Safety &amp; Alignment Community Lead at <a href="https://cohere.com/research">Cohere Labs</a></span>
+  </li>
+  <li>
+    <span class="year">2023</span>
+    <span class="desc">Graduated with distinction from TMU; awarded <a href="https://tcairem.utoronto.ca/">T-CAIREM</a> Summer Research Award</span>
+  </li>
+  <li>
+    <span class="year">2022</span>
+    <span class="desc">IBM Watson Orchestrate wins <a href="https://www.ces.tech/Innovation-Awards/Honorees/2022/Honorees/W/Watson-Orchestrate.aspx">CES 2022 Innovation Award</a></span>
+  </li>
+  <li>
+    <span class="year">2022</span>
+    <span class="desc">1st place at <a href="#">UofTHacks IX</a> with Metagram, an AR social network for small businesses</span>
+  </li>
+  <li>
+    <span class="year">2022</span>
+    <span class="desc">Applied ML internship at <a href="https://vectorinstitute.ai/">Vector Institute</a></span>
+  </li>
+</ul>
 
-    <header class="post-header" style="text-align: center;">
-      <h1 style="font-size: 1.8rem; margin-top: 0; margin-bottom: 0;">
-                  Alif Munim</h1>
-    </header>
+<!-- Papers -->
+<h2 id="papers" class="section-heading">Papers</h2>
+<p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1.2rem;">
+  <a href="https://scholar.google.com/citations?user=YOUR_ID" style="font-family: 'Source Sans 3', sans-serif;">Google Scholar</a>
+</p>
 
-    <br>
-    <p>
-      I'm a machine learning engineer.
-    </p>
-
-    </article>
-
-    <br><br>
-    <div id="Academic Experience" class="post">
-      <article class="post-content">
-          <header class="post-header">
-            <h1 style="font-size: 2rem; margin-top: 0; margin-bottom: 0">Academic Experience</h1>
-          </header>
-      </article>
-    </div>
-
-    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="20">
-
-
-      <!-- Experience Entry -->
-      <tr>
-        <td valign="middle" width="25%">
-          <a href="#" onmouseout="gibbs_jem_stop()" onmouseover="gibbs_jem_start()">
-            <div style="position: relative;">
-              <div id="gibbs_jem_image" style="position: absolute; transition: opacity .2s ease-in-out;-webkit-transition: opacity .2s ease-in-out;-moz-transition: opacity .2s ease-in-out;-o-transition: opacity .2s ease-in-out;">
-                <img src="{{ site.base_url }}/images/exp/unet.png">
-              </div>
-              <img src="{{ site.base_url }}/images/exp/ryerson.png">
-            </div>
-          </a>
-          <script type="text/javascript">
-            function gibbs_jem_start() {
-              document.getElementById("gibbs_jem_image").style.opacity = "1";
-            }
-
-            function gibbs_jem_stop() {
-              document.getElementById("gibbs_jem_image").style.opacity = "0";
-            }
-            gibbs_jem_stop()
-          </script>
-        </td>
-
-        <td valign="top" width="75%">
-          <h3>Classical vs Deep Learning Methods for Image Segmentation of Small Brain MRI Datasets</h3>
-          <p>
-              <!-- Multi-attribute classification generalizes classification, presenting new challenges for making accurate
-              predictions and quantifying uncertainty.
-              We build upon recent work and show that architectures for multi-attribute prediction can be reinterpreted as
-              energy-based models (EBMs).
-              We propose a simple extension that allows us to directly maximize the likelihood of data and labels under the
-              unnormalized joint distribution.
-              Our models are capable of both accurate, calibrated predictions and high-quality conditional synthesis
-              of novel attribute combinations. -->
-
-             A review of approaches to overcome the challenges that exist in biomedical
-             image processing; low segmentation accuracy, small datasets, and low resolution.
-
-             I worked with
-             <a href="https://scholar.google.ca/citations?user=nqE2CWsAAAAJ&hl=en">Dr. Dafna Sussman</a>,
-             <a href="https://www.linkedin.com/in/daniel-nussey-a997a2131/?originalSubdomain=ca">Daniel Nussey</a>, and
-             <a href="https://www.linkedin.com/in/rachita-singh-49936b161/?originalSubdomain=ca">Rachita Singh</a> at Ryerson's
-             <a href="https://www.ryerson.ca/dsussman/">Maternal-Fetal Imaging Laboratory</a>
-             to compare u-nets, fully convolutional networks, and gradient-boosted ensemble models for
-             the segmentation of brain metastases in <100 3D MRI scans.
-          </p>
-        </td>
-      </tr>
-      <!-- End of Experience Entry -->
-
-      <!-- Experience Entry -->
-      <tr>
-        <td valign="middle" width="25%">
-          <a href="#" onmouseout="vera_stop()" onmouseover="vera_start()">
-            <div style="position: relative;">
-              <div id="vera_image" style="position: absolute; transition: opacity .2s ease-in-out;-webkit-transition: opacity .2s ease-in-out;-moz-transition: opacity .2s ease-in-out;-o-transition: opacity .2s ease-in-out;">
-                <img src="{{ site.base_url }}/images/exp/speech-act.png">
-              </div>
-              <img src="{{ site.base_url }}/images/exp/uoft.png">
-            </div>
-          </a>
-          <script type="text/javascript">
-            function vera_start() {
-              document.getElementById("vera_image").style.opacity = "1";
-            }
-
-            function vera_stop() {
-              document.getElementById("vera_image").style.opacity = "0";
-            }
-            vera_stop()
-          </script>
-        </td>
-
-        <td valign="top" width="75%">
-          <h3>Email Speech Act Classification for Task Automation</h3>
-          <p>
-              A collaborative effort between the University of Toronto and IBM's
-              <a href="https://www-01.ibm.com/ibm/cas/">Center for Advanced Studies (CAS)</a>
-              to extend prior work in speech-act theory and bring it into the realm of deep learning.
-              More specifically, we utilize earlier work by Carvalho and Cohen (2005) defining illocutionary points
-              in "email speech acts" to build taxonomic word embeddings for semantic relatedness. I had the pleasure
-              of being supervised by Dr. Eric Yu during my time contributing to this project. Our work culminated
-              in the launch of
-              <a href="https://www.ibm.com/ca-en/cloud/automation/watson-orchestrate">IBM Watson Orchestrate</a>,
-              a productivity assistant that won a
-              <a href="https://www.ces.tech/Innovation-Awards/Honorees/2022/Honorees/W/Watson-Orchestrate.aspx?utm_source=BusinessAutomation&utm_campaign=WatsonOrchestrate">CES 2022 Innovation Award</a>.
-          </p>
-        </td>
-      </tr>
-      <!-- End of Experience Entry -->
-    </table>
-    <br><br>
-
-    <!-- Industry -->
-    <div id="Industry" class="post">
-        <article class="post-content">
-            <header class="post-header">
-              <h1 style="font-size: 2rem; margin-top: 0; margin-bottom: 0">Industry Experience</h1>
-            </header>
-        </article>
-    </div>
-
-    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="20">
-
+<table class="paper-table">
+  <tbody>
     <tr>
-      <td valign="middle" width="25%">
-    <a href="#" onmouseout="taynode_stop()" onmouseover="taynode_start()">
-      <div style="position: relative;">
-        <div id="taynode_image" style="position: absolute; transition: opacity .2s ease-in-out;-webkit-transition: opacity .2s ease-in-out;-moz-transition: opacity .2s ease-in-out;-o-transition: opacity .2s ease-in-out;">
-          <img src="{{ site.base_url }}/images/exp/watson-aiops.png">
-        </div>
-        <img src="{{ site.base_url }}/images/exp/ibm.svg">
-      </div>
-    </a>
-    <script type="text/javascript">
-      function taynode_start() {
-        document.getElementById("taynode_image").style.opacity = "1";
-      }
-
-      function taynode_stop() {
-        document.getElementById("taynode_image").style.opacity = "0";
-      }
-      taynode_stop()
-    </script>
-  </td>
-
-
-      <td valign="top" width="75%">
-
-        <h3>Building Intelligent Enterprises with IBM Watson AIOps</h3>
-        <p>
-            IBM Cloud Pak for Watson AIOps is an intelligent IT solution for businesses.
-            Using AI for predictive log analytics and anomaly detection,
-            <a href="https://www.ibm.com/ca-en/cloud/cloud-pak-for-watson-aiops">Watson AIOps</a> automates
-            complex IT processes and vastly reduces risk. As a software engineer intern on the
-            Watson AIOps team, I took on a lead role in building efficient data pipelines for
-            data cleaning, feature extraction, and AI training.
+      <td class="paper-year">2026</td>
+      <td class="paper-info">
+        <a href="/research/2025/02/07/echojepa/" class="paper-title preview-link"
+           data-title="EchoJEPA"
+           data-meta="2026 &middot; arXiv &middot; JEPA, foundation models, echocardiography, world models"
+           data-preview="A latent predictive foundation model for cardiac ultrasound, trained on 18M videos from 300K patients at UHN. Predicts in abstract representation space rather than reconstructing pixels, naturally filtering speckle noise.">EchoJEPA: A Latent Predictive Foundation Model for Echocardiography</a>
+        <span class="paper-authors">
+          <strong>A Munim</strong>, A Fallahpour, T Szasz, A Attarpour, R Jiang, B Sooriyakanthan, M Sooriyakanthan, H Whitney, J Slivnick, Q Garrido, K Sinha, W Tsang, B Rubin, B Wang
+        </span>
+        <span class="paper-venue">arXiv preprint arXiv:2602.02603 &middot; <a href="https://arxiv.org/abs/2602.02603">arXiv</a> &middot; <a href="https://echojepa.com">website</a></span>
       </td>
     </tr>
-    </table>
+    <tr>
+      <td class="paper-year">2025</td>
+      <td class="paper-info">
+        <a href="/research/2025/02/01/medrax/" class="paper-title preview-link"
+           data-title="MedRAX"
+           data-meta="2025 &middot; arXiv &middot; agents, chest X-ray, medical reasoning, tool use"
+           data-preview="The first AI agent framework integrating specialized CXR analysis tools with LLMs via a ReAct loop. SOTA on ChestAgentBench (63.1%) and SLAKE VQA (90.35%), without additional training.">MedRAX: Medical Reasoning Agent for Chest X-ray</a>
+        <span class="paper-authors">
+          A Fallahpour, J Ma, <strong>A Munim</strong>, H Lyu, B Wang
+        </span>
+        <span class="paper-venue">arXiv preprint arXiv:2502.02673 &middot; <a href="https://arxiv.org/abs/2502.02673">arXiv</a></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="paper-year">2025</td>
+      <td class="paper-info">
+        <a href="/research/2025/01/06/on-device-llms-clinical/" class="paper-title preview-link"
+           data-title="On-Device LLMs for Clinical Decision Support"
+           data-meta="2025 &middot; arXiv &middot; LLMs, on-device, clinical decision support, privacy"
+           data-preview="On-device LLMs (20B/120B) match cloud-based systems for clinical tasks while preserving privacy. Fine-tuning the 20B model boosts accuracy from 77% to 87%, approaching GPT-5 and beating DeepSeek-R1.">Benchmarking and Adapting On-Device Large Language Models for Clinical Decision Support</a>
+        <span class="paper-authors">
+          <strong>A Munim</strong>, J Ma, O Ibrahim, A Abdalla, S Yin, L Chen, B Wang
+        </span>
+        <span class="paper-venue">arXiv preprint arXiv:2601.03266 &middot; <a href="https://arxiv.org/abs/2601.03266">arXiv</a></span>
+      </td>
+    </tr>
+    <tr>
+      <td class="paper-year">2023</td>
+      <td class="paper-info">
+        <a href="https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000159" class="paper-title">Interpretable Machine Learning for Automated Left Ventricular Scar Quantification in Hypertrophic Cardiomyopathy Patients</a>
+        <span class="paper-authors">
+          Z Navidi, J Sun, RH Chan, K Hanneman, A Al-Arnawoot, <strong>A Munim</strong>, et al.
+        </span>
+        <span class="paper-venue">PLOS Digital Health 2(1), e0000159</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="paper-year">2023</td>
+      <td class="paper-info">
+        <a href="https://aclanthology.org/2022.emnlp-industry.22/" class="paper-title">Bringing the State-of-the-Art to Customers: A Neural Agent Assistant Framework for Customer Service Support</a>
+        <span class="paper-authors">
+          S Obadinma, FK Khattak, S Wang, T Sidhom, E Lau, S Robertson, J Niu, ...
+        </span>
+        <span class="paper-venue">EMNLP 2022 (Industry Track)</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
+<!-- Projects -->
+<h2 id="projects" class="section-heading">Projects</h2>
 
+<div class="two-col">
+  <div>
+    <h3 class="col-heading">Research</h3>
+    <ul class="link-list">
+      <li><a href="/research/2025/02/07/echojepa/" class="preview-link"
+             data-title="EchoJEPA"
+             data-meta="2026 &middot; JEPA, foundation models, echocardiography, world models"
+             data-preview="Latent predictive foundation model for cardiac ultrasound. Trained on 18M videos from 300K patients. 20% lower error on function estimation vs. best existing model.">EchoJEPA: Foundation Model for Echocardiography</a></li>
+      <li><a href="/research/2025/02/01/medrax/" class="preview-link"
+             data-title="MedRAX"
+             data-meta="2025 &middot; agents, chest X-ray, medical reasoning, tool use"
+             data-preview="First AI agent framework integrating specialized CXR tools with LLMs via ReAct. SOTA on ChestAgentBench (63.1%) without additional training.">MedRAX: Medical Reasoning Agent for Chest X-ray</a></li>
+      <li><a href="/research/2025/01/06/on-device-llms-clinical/" class="preview-link"
+             data-title="On-Device LLMs for Clinical Decision Support"
+             data-meta="2025 &middot; LLMs, on-device, clinical decision support, privacy"
+             data-preview="On-device LLMs match cloud systems for clinical tasks. Fine-tuning a 20B model boosts accuracy from 77% to 87%, approaching GPT-5.">On-Device LLMs for Clinical Decision Support</a></li>
+      <li><a href="/research/generative-models/2023/05/01/generative-models-medical-imaging/" class="preview-link"
+             data-title="Generative Models for Medical Imaging"
+             data-meta="2023 &middot; diffusion models, GANs, VAEs"
+             data-preview="Undergraduate thesis on diffusion models for medical image generation. Training from scratch outperformed fine-tuning.">Generative Models for Medical Imaging</a></li>
+      <li><a href="/research/medical-imaging/2022/05/15/brain-mri-segmentation/" class="preview-link"
+             data-title="Brain MRI Segmentation"
+             data-meta="2022 &middot; segmentation, U-Net, MRI"
+             data-preview="Comparing deep learning and classical methods for brain metastasis segmentation in <100 3D MRI scans.">Brain MRI Segmentation</a></li>
+      <li><a href="/research/nlp/2021/08/01/email-speech-acts/" class="preview-link"
+             data-title="Email Speech Act Classification"
+             data-meta="2021 &middot; NLP, speech acts, IBM"
+             data-preview="UofT-IBM collaboration on speech-act theory for email intent classification. Contributed to Watson Orchestrate.">Email Speech Act Classification</a></li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="col-heading">Community &amp; Industry</h3>
+    <ul class="link-list">
+      <li><a href="/ai-safety/community/2024/01/15/ai-safety-cohere-labs/" class="preview-link"
+             data-title="AI Safety at Cohere Labs"
+             data-meta="2024 &middot; AI safety, alignment, governance"
+             data-preview="Community Lead for AI Safety & Alignment. 12+ speaker sessions with researchers from Anthropic, UK AISI, Encode AI, and more.">AI Safety &amp; Alignment, Cohere Labs</a></li>
+      <li><a href="https://www.ibm.com/products/watson-aiops">Watson AIOps</a></li>
+      <li><a href="https://www.ibm.com/products/watson-orchestrate">Watson Orchestrate</a></li>
+      <li><a href="https://vectorinstitute.ai/">Vector Institute (Internship)</a></li>
+    </ul>
+  </div>
 </div>
+
+<div style="margin-top: 2rem;">
+  <article class="project">
+    <h3><a href="/research/2025/02/07/echojepa/" class="preview-link"
+           data-title="EchoJEPA"
+           data-meta="2025 &middot; JEPA, foundation models, echocardiography, self-supervised learning"
+           data-preview="A latent predictive foundation model for cardiac ultrasound, trained on 18M videos from 300K patients at UHN. Predicts in abstract representation space rather than reconstructing pixels.">EchoJEPA: A Latent Predictive Foundation Model for Echocardiography</a></h3>
+    <p class="meta">
+      With Adib Fallahpour, Ahmadreza Attarpour, Teodora Szasz, River Jiang, et al. &middot;
+      UHN &middot; Supervised by Dr. Bo Wang
+    </p>
+    <p>
+      Built on Yann LeCun's JEPA architecture, EchoJEPA predicts the meaning of masked
+      cardiac video regions in an abstract latent space rather than reconstructing pixels.
+      Trained on 18 million ultrasound videos from 300K patients at UHN.
+      20% lower error on cardiac function estimation; 79% view classification with 1% of labels;
+      zero-shot pediatric transfer beats all baselines.
+    </p>
+    <div class="tags">
+      <span class="tag">Foundation Models</span>
+      <span class="tag">Echocardiography</span>
+      <span class="tag">JEPA</span>
+      <span class="tag">Self-Supervised</span>
+    </div>
+  </article>
+
+  <article class="project">
+    <h3><a href="/research/2025/02/01/medrax/" class="preview-link"
+           data-title="MedRAX"
+           data-meta="2025 &middot; agents, chest X-ray, medical reasoning, tool use"
+           data-preview="The first AI agent framework integrating specialized CXR analysis tools with LLMs via a ReAct loop. SOTA on ChestAgentBench (63.1%) and SLAKE VQA (90.35%), without additional training.">MedRAX: Medical Reasoning Agent for Chest X-ray</a></h3>
+    <p class="meta">
+      With Adib Fallahpour, Jingyi Ma, Huizi Lyu &middot;
+      UHN &middot; Supervised by Dr. Bo Wang
+    </p>
+    <p>
+      The first AI agent framework that integrates specialized chest X-ray analysis tools
+      with large language models via a ReAct reasoning loop. Coordinates CheXagent, MedSAM,
+      and other clinical tools to perform complex multi-step medical reasoning. Achieves SOTA
+      on ChestAgentBench (63.1%) and SLAKE VQA (90.35%) without additional training.
+    </p>
+    <div class="tags">
+      <span class="tag">AI Agents</span>
+      <span class="tag">Medical Reasoning</span>
+      <span class="tag">Chest X-ray</span>
+      <span class="tag">Tool Use</span>
+    </div>
+  </article>
+
+  <article class="project">
+    <h3><a href="/research/2025/01/06/on-device-llms-clinical/" class="preview-link"
+           data-title="On-Device LLMs for Clinical Decision Support"
+           data-meta="2025 &middot; LLMs, on-device, clinical decision support, privacy"
+           data-preview="On-device LLMs (20B/120B) match cloud-based systems for clinical tasks while preserving privacy. Fine-tuning the 20B model boosts accuracy from 77% to 87%, approaching GPT-5.">Benchmarking On-Device LLMs for Clinical Decision Support</a></h3>
+    <p class="meta">
+      With Jingyi Ma, Omar Ibrahim, Aya Abdalla, Shuo Yin, Ling Chen &middot;
+      UHN &middot; Supervised by Dr. Bo Wang
+    </p>
+    <p>
+      Evaluating whether on-device LLMs (20B and 120B parameters) can match cloud-based
+      systems for clinical tasks while preserving patient privacy. Designed three evaluation
+      frameworks: generalist medical reasoning, specialist clinical scoring, and LLM-as-judge.
+      Fine-tuning the 20B model boosts accuracy from 77% to 87%, approaching GPT-5 and
+      beating DeepSeek-R1.
+    </p>
+    <div class="tags">
+      <span class="tag">On-Device LLMs</span>
+      <span class="tag">Clinical AI</span>
+      <span class="tag">Privacy</span>
+      <span class="tag">Fine-Tuning</span>
+    </div>
+  </article>
+
+  <article class="project">
+    <h3><a href="/research/generative-models/2023/05/01/generative-models-medical-imaging/" class="preview-link"
+           data-title="Generative Models for Medical Imaging"
+           data-meta="2023 &middot; diffusion models, GANs, VAEs, medical imaging"
+           data-preview="Undergraduate thesis investigating diffusion models for generating realistic medical images. Training from scratch consistently outperformed fine-tuning pretrained natural-image models.">Towards Generative Models for Medical Imaging</a></h3>
+    <p class="meta">
+      Undergraduate Thesis &middot; Toronto Metropolitan University &middot; 2023
+    </p>
+    <p>
+      An investigation into diffusion models for generating realistic medical images to
+      address data limitations in healthcare. Experiments showed that training from scratch
+      on domain-specific data consistently outperformed fine-tuning pretrained natural-image
+      models. Reviews GANs, VAEs, and diffusion model foundations.
+    </p>
+    <div class="tags">
+      <span class="tag">Diffusion Models</span>
+      <span class="tag">Medical Imaging</span>
+      <span class="tag">Generative AI</span>
+    </div>
+  </article>
+
+  <article class="project">
+    <h3><a href="/research/medical-imaging/2022/05/15/brain-mri-segmentation/" class="preview-link"
+           data-title="Brain MRI Segmentation"
+           data-meta="2022 &middot; segmentation, U-Net, MRI, computer vision"
+           data-preview="Comparing U-Nets, FCNs, and gradient-boosted ensembles for brain metastasis segmentation in <100 3D MRI scans at TMU's Maternal-Fetal Imaging Laboratory.">Classical vs Deep Learning for Brain MRI Segmentation</a></h3>
+    <p class="meta">
+      With <a href="https://scholar.google.ca/citations?user=nqE2CWsAAAAJ&hl=en">Dr. Dafna Sussman</a>,
+      Daniel Nussey, Rachita Singh &middot; Toronto Metropolitan University
+    </p>
+    <p>
+      Compared U-Nets, fully convolutional networks, and gradient-boosted ensemble models
+      for brain metastasis segmentation in &lt;100 3D MRI scans. Deep learning significantly
+      outperformed classical methods; data augmentation proved critical for generalization.
+    </p>
+    <div class="tags">
+      <span class="tag">Medical Imaging</span>
+      <span class="tag">Segmentation</span>
+      <span class="tag">U-Net</span>
+    </div>
+  </article>
+
+  <article class="project">
+    <h3><a href="/research/nlp/2021/08/01/email-speech-acts/" class="preview-link"
+           data-title="Email Speech Act Classification"
+           data-meta="2021 &middot; NLP, speech acts, word embeddings, IBM"
+           data-preview="A UofT-IBM collaboration applying speech-act theory to deep learning for email intent classification. Contributed to IBM Watson Orchestrate, winner of a CES 2022 Innovation Award.">Email Speech Act Classification for Task Automation</a></h3>
+    <p class="meta">
+      With Dr. Eric Yu &middot; University of Toronto &times; IBM Center for Advanced Studies
+    </p>
+    <p>
+      Extended speech-act theory into deep learning. Built taxonomic word embeddings for
+      email intent classification using Carvalho &amp; Cohen (2005). This work contributed
+      to <a href="https://www.ibm.com/products/watson-orchestrate">IBM Watson Orchestrate</a>,
+      which won a <a href="https://www.ces.tech/Innovation-Awards/Honorees/2022/Honorees/W/Watson-Orchestrate.aspx">CES 2022 Innovation Award</a>.
+    </p>
+    <div class="tags">
+      <span class="tag">NLP</span>
+      <span class="tag">Speech Acts</span>
+      <span class="tag">IBM</span>
+    </div>
+  </article>
+</div>
+
+<!-- Writing & Links -->
+<h2 id="writing" class="section-heading">Writing &amp; Links</h2>
+
+<div class="writing-item">
+  <a href="/research/2025/02/07/echojepa/" class="preview-link"
+     data-title="EchoJEPA"
+     data-meta="2026 &middot; JEPA, foundation models, echocardiography, world models"
+     data-preview="Latent predictive foundation model for cardiac ultrasound. 18M videos, 300K patients, 20% lower error vs. SOTA.">EchoJEPA: A Latent Predictive Foundation Model for Echocardiography</a>
+  <span class="date">2026</span>
+</div>
+<div class="writing-item">
+  <a href="/research/2025/02/01/medrax/" class="preview-link"
+     data-title="MedRAX"
+     data-meta="2025 &middot; agents, chest X-ray, medical reasoning, tool use"
+     data-preview="First AI agent framework integrating CXR tools with LLMs. SOTA on ChestAgentBench without additional training.">MedRAX: Medical Reasoning Agent for Chest X-ray</a>
+  <span class="date">2025</span>
+</div>
+<div class="writing-item">
+  <a href="/research/2025/01/06/on-device-llms-clinical/" class="preview-link"
+     data-title="On-Device LLMs for Clinical Decision Support"
+     data-meta="2025 &middot; LLMs, on-device, privacy, fine-tuning"
+     data-preview="On-device LLMs match cloud systems. Fine-tuning 20B model boosts accuracy from 77% to 87%, approaching GPT-5.">On-Device LLMs for Clinical Decision Support</a>
+  <span class="date">2025</span>
+</div>
+<div class="writing-item">
+  <a href="/ai-safety/community/2024/01/15/ai-safety-cohere-labs/" class="preview-link"
+     data-title="AI Safety at Cohere Labs"
+     data-meta="2024 &middot; AI safety, alignment, governance"
+     data-preview="Community Lead for AI Safety & Alignment. 12+ speakers from Anthropic, UK AISI, Encode AI.">AI Safety &amp; Alignment at Cohere Labs</a>
+  <span class="date">2024</span>
+</div>
+<div class="writing-item">
+  <a href="/research/generative-models/2023/05/01/generative-models-medical-imaging/" class="preview-link"
+     data-title="Generative Models for Medical Imaging"
+     data-meta="2023 &middot; diffusion models, GANs, VAEs"
+     data-preview="Undergraduate thesis on diffusion models for medical image generation. Training from scratch beats fine-tuning.">Towards Generative Models for Medical Imaging</a>
+  <span class="date">2023</span>
+</div>
+<div class="writing-item">
+  <a href="/research/medical-imaging/2022/05/15/brain-mri-segmentation/" class="preview-link"
+     data-title="Brain MRI Segmentation"
+     data-meta="2022 &middot; segmentation, U-Net, MRI"
+     data-preview="Comparing deep and classical methods for brain tumor segmentation in small datasets.">Classical vs Deep Learning for Brain MRI Segmentation</a>
+  <span class="date">2022</span>
+</div>
+<div class="writing-item">
+  <a href="/research/nlp/2021/08/01/email-speech-acts/" class="preview-link"
+     data-title="Email Speech Acts"
+     data-meta="2021 &middot; NLP, speech acts, IBM"
+     data-preview="Speech-act theory meets deep learning for email classification. Contributed to Watson Orchestrate.">Email Speech Act Classification for Task Automation</a>
+  <span class="date">2021</span>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>
+    <a href="mailto:alif.munim@ryerson.ca">Email</a> &middot;
+    <a href="https://github.com/alif-munim">GitHub</a> &middot;
+    <a href="https://linkedin.com/in/alif-munim">LinkedIn</a> &middot;
+    <a href="https://echojepa.com">EchoJEPA</a>
+  </p>
+  <p class="colophon">
+    Built with Jekyll. Inspired by <a href="https://gwern.net">Gwern.net</a>.
+  </p>
+</footer>
