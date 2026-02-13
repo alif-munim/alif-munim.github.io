@@ -255,7 +255,7 @@ layout: null
   let gameState = 'loading';
 
   let levelStartTime = 0, levelTimeLimit = 0;
-  const TIME_LIMITS = [25, 25, 45, 60]; // platformer, maze, petals, boss
+  const TIME_LIMITS = [25, 25, 60, 60]; // platformer, maze, petals, boss
 
   function startTimer(s) { levelTimeLimit = s; levelStartTime = Date.now(); }
   function getTimeLeft() { if (gameState !== 'playing') return levelTimeLimit; return Math.max(0, levelTimeLimit - (Date.now() - levelStartTime) / 1000); }
@@ -588,7 +588,7 @@ layout: null
 
   // ── LEVEL 3: DODGE & CATCH ──
   let dPlayer, dThorns, dPetals, dHeartPiece, dScore, dHeartCollected, dTimer, dAnim;
-  const PETALS_NEEDED = 20;
+  const PETALS_NEEDED = 12;
 
   function initDodge() {
     titleEl.textContent = '// heartstealer — iii. the catch';
