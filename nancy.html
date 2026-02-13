@@ -239,6 +239,7 @@ layout: null
 
   // ── GAME STATE ──
   let heartsFound = [false, false, false];
+  let poemIndex = 0;
   let currentLevel = 0;
   let particles = [];
   let screenShake = 0;
@@ -276,9 +277,19 @@ layout: null
   function showOverlay(title, subtitle, btnText, onBtn) {
     const ov = document.createElement('div');
     ov.className = 'overlay';
-    ov.innerHTML = `<h2>${title}</h2><p>${subtitle}</p><button>${btnText}</button>`;
+    ov.innerHTML = `
+      <h2>${title}</h2>
+      <p>${subtitle}</p>
+      <p style="margin-top: 1rem; font-size: 0.9rem; color: #ff8fa3;">will you be my valentine?<br/>i'll let you try again :)</p>
+      <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <button id="fail-yes">yes</button>
+        <button id="fail-no">no</button>
+      </div>
+      <p id="fail-hint" style="font-size: 0.72rem; color: #ff4d6d; margin-top: 0.6rem; opacity: 0; transition: opacity 0.4s;">(you have to click yes)</p>
+    `;
     document.body.appendChild(ov);
-    ov.querySelector('button').onclick = () => { ov.remove(); onBtn(); };
+    ov.querySelector('#fail-yes').onclick = () => { ov.remove(); onBtn(); };
+    ov.querySelector('#fail-no').onclick = () => { ov.querySelector('#fail-hint').style.opacity = '1'; };
   }
 
   // ── DRAWING HELPERS ──
@@ -450,12 +461,12 @@ layout: null
   }
 
   // ── LEVEL 2: MAZE ──
-  let mGrid, mCols, mRows, mPlayer, mExit, mHeartCollected, mTrail, mAnim, mFacing;
+  let mGrid, mCols, mRows, mPlayer, mExit, mHeartCollected, mTrail, mAnim, mFacing, mGems;
   const MC = 28;
 
   function initMaze() {
     titleEl.textContent = '// heartstealer — ii. the search';
-    msgEl.textContent = 'arrow keys to navigate the maze';
+    msgEl.textContent = 'collect all gems to reveal the heart';
     levelEl.textContent = '2';
     mCols = 19; mRows = 15;
     canvas.width = mCols * MC; canvas.height = mRows * MC;
@@ -483,6 +494,17 @@ layout: null
     carve(1, 1);
     mPlayer = { x: 1, y: 1 }; mExit = { x: mCols - 2, y: mRows - 2 };
     mGrid[mExit.y][mExit.x] = 1; mTrail.push({ x: 1, y: 1 });
+
+    // Place gems on open cells away from start and exit
+    mGems = [];
+    const openCells = [];
+    for (let y = 1; y < mRows - 1; y++) for (let x = 1; x < mCols - 1; x++) {
+      if (mGrid[y][x] === 1 && !(x === 1 && y === 1) && !(x === mExit.x && y === mExit.y)) openCells.push({ x, y });
+    }
+    for (let i = openCells.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [openCells[i], openCells[j]] = [openCells[j], openCells[i]]; }
+    const gemCount = Math.min(5, openCells.length);
+    for (let i = 0; i < gemCount; i++) mGems.push({ x: openCells[i].x, y: openCells[i].y, alive: true, t: Math.random() * 6 });
+
     startTimer(TIME_LIMITS[1]);
   }
 
@@ -503,7 +525,11 @@ layout: null
     mTrail.push({ x: nx, y: ny });
     updateAnim(mAnim, 'run', 5);
 
-    if (nx === mExit.x && ny === mExit.y && !mHeartCollected) {
+    // Gem collection
+    for (const g of mGems) { if (g.alive && g.x === nx && g.y === ny) { g.alive = false; spawnParticles(g.x * MC + MC / 2, g.y * MC + MC / 2, '#ffb3c1', 8); } }
+
+    const allGemsCollected = mGems.every(g => !g.alive);
+    if (allGemsCollected && nx === mExit.x && ny === mExit.y && !mHeartCollected) {
       mHeartCollected = true; heartsFound[1] = true; updateHeartUI();
       spawnParticles(nx * MC + MC / 2, ny * MC + MC / 2, '#ff4d6d', 30); screenShake = 6;
       gameState = 'transition';
@@ -522,7 +548,26 @@ layout: null
 
     for (let i = 0; i < mTrail.length - 1; i++) { const tr = mTrail[i]; ctx.fillStyle = `rgba(255, 77, 109, ${0.05 + (i / mTrail.length) * 0.12})`; ctx.fillRect(tr.x * MC + 3, tr.y * MC + 3, MC - 6, MC - 6); }
 
-    if (!mHeartCollected) drawHeartPiece(mExit.x * MC + MC / 2, mExit.y * MC + MC / 2 - 2, 16, 1, t);
+    // Draw gems
+    for (const g of mGems) {
+      if (!g.alive) continue;
+      g.t += 0.05;
+      const gx = g.x * MC + MC / 2, gy = g.y * MC + MC / 2 + Math.sin(g.t) * 2;
+      ctx.shadowColor = '#ff8fa3'; ctx.shadowBlur = 8;
+      ctx.fillStyle = '#ff8fa3'; ctx.beginPath(); ctx.arc(gx, gy, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffccd5'; ctx.beginPath(); ctx.arc(gx, gy, 2.5, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Gem counter
+    const gemsLeft = mGems.filter(g => g.alive).length;
+    if (gemsLeft > 0) {
+      ctx.fillStyle = '#ff8fa3'; ctx.font = '11px "Source Code Pro"'; ctx.globalAlpha = 0.7;
+      ctx.fillText(`gems: ${mGems.length - gemsLeft} / ${mGems.length}`, 8, 16); ctx.globalAlpha = 1;
+    }
+
+    const allGemsCollected = mGems.every(g => !g.alive);
+    if (!mHeartCollected && allGemsCollected) drawHeartPiece(mExit.x * MC + MC / 2, mExit.y * MC + MC / 2 - 2, 16, 1, t);
 
     // Player sprite in maze
     const sd = sprites.pink[mAnim.anim] || sprites.pink.idle;
@@ -645,7 +690,7 @@ layout: null
     bBossTimer = 0;
     bBossPhase = 0;
     bHealthDrops = [];
-    bHealthDropSchedule = [300, 600, 900]; // frames at which health drops spawn (roughly 5s, 10s, 15s)
+    bHealthDropSchedule = [240, 480, 720, 960, 1200]; // frames at which health drops spawn (roughly 4s, 8s, 12s, 16s, 20s)
     startTimer(TIME_LIMITS[3]);
   }
 
@@ -898,36 +943,65 @@ layout: null
       if (frame < 90) requestAnimationFrame(animateHeart);
     }
 
-    const poemLines = [
-      'i searched through every level,',
-      'through mazes, leaps, and fights —',
-      'caught petals in the falling dark,',
-      'chased hearts through pixel nights.',
-      '',
-      'but nancy, here\'s the secret:',
-      'no code could make this true —',
-      'the only heart i ever wanted',
-      'was already next to you.',
+    const allPoems = [
+      ['if life were a game,', 'i would beat every level', 'just to get to you'],
+      ['preparing for you —', 'the first half of my life was', 'a tutorial'],
+      ['life needs player 2 —', 'fireboy and watergirl,', 'you\'re my other half'],
     ];
+    const poemLines = allPoems[poemIndex % allPoems.length];
+    poemIndex++;
 
     let poemHTML = '<div class="poem-container">';
     poemLines.forEach((line, i) => {
-      if (line === '') poemHTML += '<br/>';
-      else poemHTML += `<div class="poem-line" style="animation-delay: ${1.5 + i * 0.35}s">${line}</div>`;
+      poemHTML += `<div class="poem-line" style="animation-delay: ${1.5 + i * 0.4}s">${line}</div>`;
     });
     poemHTML += '</div>';
 
+    const poemEnd = 1.5 + poemLines.length * 0.4;
+    const valDelay = poemEnd + 1.2;
     ov.innerHTML = `
       <h2>heart restored</h2>
       ${poemHTML}
-      <p style="opacity:0.5; font-size: 0.75rem; animation: fadeInLine 0.6s ease forwards; animation-delay: ${1.5 + poemLines.length * 0.35}s; opacity: 0;">happy valentine's day, nancy</p>
-      <button style="animation: fadeInLine 0.6s ease forwards; animation-delay: ${2 + poemLines.length * 0.35}s; opacity: 0;">play again</button>
+      <p style="font-size: 0.75rem; animation: fadeInLine 0.6s ease forwards; animation-delay: ${poemEnd + 0.5}s; opacity: 0; color: rgba(255,143,163,0.5); margin-top: 1.2rem;">happy valentine's day, nancy</p>
+      <p id="val-question" style="font-size: 0.9rem; color: #ff8fa3; animation: fadeInLine 0.6s ease forwards; animation-delay: ${valDelay}s; opacity: 0; margin-top: 1.5rem;">will you be my valentine?</p>
+      <div id="val-buttons" style="display: flex; gap: 1rem; margin-top: 0.8rem; animation: fadeInLine 0.6s ease forwards; animation-delay: ${valDelay + 0.3}s; opacity: 0;">
+        <button id="val-yes">yes</button>
+        <button id="val-no">no</button>
+      </div>
+      <div id="val-result" style="margin-top: 1rem; text-align: center;"></div>
+      <p id="val-hint" style="font-size: 0.72rem; color: #ff4d6d; margin-top: 0.4rem; opacity: 0; transition: opacity 0.4s;">(you have to click yes)</p>
+      <button id="play-again-btn" style="display: none; margin-top: 1.2rem;">play again</button>
     `;
     ov.insertBefore(heartCanvas, ov.querySelector('.poem-container'));
     document.body.appendChild(ov);
     animateHeart();
 
-    ov.querySelector('button').onclick = () => {
+    ov.querySelector('#val-yes').onclick = () => {
+      ov.querySelector('#val-buttons').style.display = 'none';
+      ov.querySelector('#val-hint').style.opacity = '0';
+      ov.querySelector('#val-question').style.display = 'none';
+      const result = ov.querySelector('#val-result');
+      result.innerHTML = '<img src="/images/game/happy_mochi.gif" style="border: 2px solid #333; border-radius: 4px; max-width: 200px; margin-top: 0.5rem;"/>';
+      ov.querySelector('#play-again-btn').style.display = '';
+    };
+    ov.querySelector('#val-no').onclick = () => {
+      ov.querySelector('#val-buttons').style.display = 'none';
+      ov.querySelector('#val-hint').style.opacity = '0';
+      ov.querySelector('#val-question').style.display = 'none';
+      const result = ov.querySelector('#val-result');
+      result.innerHTML = '<img src="/images/game/sad_mochi.gif" style="border: 2px solid #333; border-radius: 4px; max-width: 200px; margin-top: 0.5rem;"/>';
+      // After a moment, show hint and bring back buttons
+      setTimeout(() => {
+        result.innerHTML = '';
+        ov.querySelector('#val-question').style.display = '';
+        ov.querySelector('#val-question').style.opacity = '1';
+        ov.querySelector('#val-buttons').style.display = 'flex';
+        ov.querySelector('#val-buttons').style.opacity = '1';
+        ov.querySelector('#val-hint').style.opacity = '1';
+      }, 2500);
+    };
+
+    ov.querySelector('#play-again-btn').onclick = () => {
       ov.remove();
       heartsFound = [false, false, false]; updateHeartUI();
       currentLevel = 0; canvas.width = 720; canvas.height = 480;
