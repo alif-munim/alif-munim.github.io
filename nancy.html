@@ -150,9 +150,32 @@ layout: null
   bgMusic.loop = true;
   bgMusic.volume = 0.35;
 
-  // SFX
-  function sfx(src, vol) { const a = new Audio(src); a.volume = vol || 0.5; return a; }
-  function playSfx(src, vol) { const a = sfx(src, vol); a.play().catch(() => {}); }
+  // SFX — audio pool to prevent resource exhaustion
+  const sfxPool = {};
+  const SFX_POOL_SIZE = 3;
+  function playSfx(src, vol) {
+    if (!sfxPool[src]) {
+      sfxPool[src] = [];
+      for (let i = 0; i < SFX_POOL_SIZE; i++) {
+        const a = new Audio(src);
+        a.volume = vol || 0.5;
+        sfxPool[src].push(a);
+      }
+    }
+    const pool = sfxPool[src];
+    for (const a of pool) {
+      if (a.paused || a.ended) {
+        a.volume = vol || 0.5;
+        a.currentTime = 0;
+        a.play().catch(() => {});
+        return;
+      }
+    }
+    // All busy — reuse oldest
+    pool[0].currentTime = 0;
+    pool[0].volume = vol || 0.5;
+    pool[0].play().catch(() => {});
+  }
 
   function startGame() {
     if (gameStarted) return;
@@ -161,7 +184,7 @@ layout: null
     loadAllSprites().then(() => {
       initPlatformer(); updateHeartUI(); gameState = 'playing';
       msgEl.textContent = 'arrows to move · space to jump';
-      loop();
+      requestAnimationFrame(loop);
     });
   }
 
@@ -683,7 +706,7 @@ layout: null
 
   // ── LEVEL 4: BOSS FIGHT ──
   let bPlayer, bBoss, bPlayerAnim, bBossAnim, bProjectiles, bBossTimer, bBossPhase, bHealthDrops, bHealthDropSchedule;
-  const BOSS_HP = 12;
+  const BOSS_HP = 8;
   const GROUND_Y = H - 64;
 
   function initBoss() {
@@ -692,7 +715,7 @@ layout: null
     levelEl.textContent = '4';
     canvas.width = 720; canvas.height = 480;
 
-    bPlayer = { x: 100, y: GROUND_Y, vx: 0, vy: 0, w: 28, h: 32, onGround: true, facing: 1, hp: 5, maxHp: 5, attacking: false, atkTimer: 0, hurtTimer: 0, iframes: 0 };
+    bPlayer = { x: 100, y: GROUND_Y, vx: 0, vy: 0, w: 28, h: 32, onGround: true, facing: 1, hp: 7, maxHp: 7, attacking: false, atkTimer: 0, hurtTimer: 0, iframes: 0 };
     bBoss = { x: W - 180, y: GROUND_Y, w: 40, h: 40, hp: BOSS_HP, maxHp: BOSS_HP, facing: -1, state: 'idle', stateTimer: 0, attacking: false, atkTimer: 0, hurtTimer: 0, vx: 0, vy: 0, onGround: true, chargeDir: 0 };
     bPlayerAnim = makeAnimState();
     bBossAnim = makeAnimState();
@@ -775,17 +798,17 @@ layout: null
           // Pick action
           const dist = Math.abs(p.x - b.x);
           const r = Math.random();
-          if (dist < 80 && r < 0.5) {
-            b.state = 'attack'; b.stateTimer = 30; b.attacking = true; b.atkTimer = 30;
-          } else if (r < 0.7) {
-            b.state = 'charge'; b.stateTimer = 40; b.chargeDir = b.facing;
+          if (dist < 80 && r < 0.4) {
+            b.state = 'attack'; b.stateTimer = 35; b.attacking = true; b.atkTimer = 35;
+          } else if (r < 0.6) {
+            b.state = 'charge'; b.stateTimer = 35; b.chargeDir = b.facing;
           } else {
-            b.state = 'idle'; b.stateTimer = 30 + Math.floor(Math.random() * 30);
+            b.state = 'idle'; b.stateTimer = 50 + Math.floor(Math.random() * 40);
           }
         }
 
         if (b.state === 'charge') {
-          b.vx = b.chargeDir * 3;
+          b.vx = b.chargeDir * 2.2;
           updateAnim(bBossAnim, 'run', 4);
         } else if (b.state === 'attack') {
           b.atkTimer--;
@@ -1042,7 +1065,22 @@ layout: null
     drawParticles(); ctx.restore();
   }
 
-  function loop() { update(); draw(); requestAnimationFrame(loop); }
+  // Fixed timestep: always update at 60Hz regardless of display refresh rate
+  const TICK = 1000 / 60;
+  let lastTimestamp = 0, accumulator = 0;
+  function loop(timestamp) {
+    if (!lastTimestamp) lastTimestamp = timestamp;
+    accumulator += timestamp - lastTimestamp;
+    lastTimestamp = timestamp;
+    // Cap accumulator to prevent spiral of death on tab switch
+    if (accumulator > 200) accumulator = 200;
+    while (accumulator >= TICK) {
+      update();
+      accumulator -= TICK;
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
 
   // ── INIT ── (handled by login screen → startGame())
   </script>
