@@ -146,9 +146,18 @@ layout: null
   })();
 
   let gameStarted = false;
+  const bgMusic = new Audio('/audio/aladdin.mp3');
+  bgMusic.loop = true;
+  bgMusic.volume = 0.35;
+
+  // SFX
+  function sfx(src, vol) { const a = new Audio(src); a.volume = vol || 0.5; return a; }
+  function playSfx(src, vol) { const a = sfx(src, vol); a.play().catch(() => {}); }
+
   function startGame() {
     if (gameStarted) return;
     gameStarted = true;
+    bgMusic.play().catch(() => {});
     loadAllSprites().then(() => {
       initPlatformer(); updateHeartUI(); gameState = 'playing';
       msgEl.textContent = 'arrows to move · space to jump';
@@ -275,6 +284,7 @@ layout: null
   function updateHeartUI() { for (let i = 0; i < 3; i++) document.getElementById('h' + i).classList.toggle('found', heartsFound[i]); }
 
   function showOverlay(title, subtitle, btnText, onBtn) {
+    playSfx('/audio/loser.wav', 0.5);
     const ov = document.createElement('div');
     ov.className = 'overlay';
     ov.innerHTML = `
@@ -288,8 +298,8 @@ layout: null
       <p id="fail-hint" style="font-size: 0.72rem; color: #ff4d6d; margin-top: 0.6rem; opacity: 0; transition: opacity 0.4s;">(you have to click yes)</p>
     `;
     document.body.appendChild(ov);
-    ov.querySelector('#fail-yes').onclick = () => { ov.remove(); onBtn(); };
-    ov.querySelector('#fail-no').onclick = () => { ov.querySelector('#fail-hint').style.opacity = '1'; };
+    ov.querySelector('#fail-yes').onclick = () => { playSfx('/audio/button.wav', 0.3); ov.remove(); onBtn(); };
+    ov.querySelector('#fail-no').onclick = () => { playSfx('/audio/button.wav', 0.3); ov.querySelector('#fail-hint').style.opacity = '1'; };
   }
 
   // ── DRAWING HELPERS ──
@@ -399,7 +409,7 @@ layout: null
 
     if (keys[' '] || keys['ArrowUp']) p.jumpBuf = 7; else if (p.jumpBuf > 0) p.jumpBuf--;
     if (p.onGround) p.coyote = 7; else p.coyote = Math.max(0, p.coyote - 1);
-    if (p.jumpBuf > 0 && p.coyote > 0) { p.vy = jumpF; p.jumpBuf = 0; p.coyote = 0; p.onGround = false; spawnParticles(p.x + p.w / 2, p.y + p.h, '#ff8fa3', 4); }
+    if (p.jumpBuf > 0 && p.coyote > 0) { p.vy = jumpF; p.jumpBuf = 0; p.coyote = 0; p.onGround = false; spawnParticles(p.x + p.w / 2, p.y + p.h, '#ff8fa3', 4); playSfx('/audio/jump.wav', 0.3); }
     if (p.vy < -2 && !(keys[' '] || keys['ArrowUp'])) p.vy *= 0.85;
 
     p.vy += grav; if (p.vy > 11) p.vy = 11;
@@ -421,14 +431,14 @@ layout: null
     else if (Math.abs(p.vx) > 0.5) updateAnim(pAnim, 'run', 5);
     else updateAnim(pAnim, 'idle', 10);
 
-    for (const c of pCoins) { if (!c.alive) continue; c.t += 0.05; const cy = c.y + Math.sin(c.t) * 3; if (p.x < c.x + 10 && p.x + p.w > c.x - 10 && p.y < cy + 10 && p.y + p.h > cy - 10) { c.alive = false; spawnParticles(c.x, cy, '#ffb3c1', 8); } }
+    for (const c of pCoins) { if (!c.alive) continue; c.t += 0.05; const cy = c.y + Math.sin(c.t) * 3; if (p.x < c.x + 10 && p.x + p.w > c.x - 10 && p.y < cy + 10 && p.y + p.h > cy - 10) { c.alive = false; spawnParticles(c.x, cy, '#ffb3c1', 8); playSfx('/audio/coin.wav', 0.2); } }
 
     const allCoinsCollected = pCoins.every(c => !c.alive);
     if (!pHeartCollected && pHeartPos && allCoinsCollected) {
       const hx = pHeartPos.x, hy = pHeartPos.y;
       if (p.x < hx + 16 && p.x + p.w > hx - 16 && p.y < hy + 16 && p.y + p.h > hy - 16) {
         pHeartCollected = true; heartsFound[0] = true; updateHeartUI();
-        spawnParticles(hx, hy, '#ff4d6d', 30); spawnParticles(hx, hy, '#ffb3c1', 20); screenShake = 6;
+        spawnParticles(hx, hy, '#ff4d6d', 30); spawnParticles(hx, hy, '#ffb3c1', 20); screenShake = 6; playSfx('/audio/level_complete.wav', 0.5);
         gameState = 'transition';
         setTimeout(() => { currentLevel = 1; initMaze(); gameState = 'playing'; }, 1200);
       }
@@ -526,12 +536,12 @@ layout: null
     updateAnim(mAnim, 'run', 5);
 
     // Gem collection
-    for (const g of mGems) { if (g.alive && g.x === nx && g.y === ny) { g.alive = false; spawnParticles(g.x * MC + MC / 2, g.y * MC + MC / 2, '#ffb3c1', 8); } }
+    for (const g of mGems) { if (g.alive && g.x === nx && g.y === ny) { g.alive = false; spawnParticles(g.x * MC + MC / 2, g.y * MC + MC / 2, '#ffb3c1', 8); playSfx('/audio/coin.wav', 0.2); } }
 
     const allGemsCollected = mGems.every(g => !g.alive);
     if (allGemsCollected && nx === mExit.x && ny === mExit.y && !mHeartCollected) {
       mHeartCollected = true; heartsFound[1] = true; updateHeartUI();
-      spawnParticles(nx * MC + MC / 2, ny * MC + MC / 2, '#ff4d6d', 30); screenShake = 6;
+      spawnParticles(nx * MC + MC / 2, ny * MC + MC / 2, '#ff4d6d', 30); screenShake = 6; playSfx('/audio/level_complete.wav', 0.5);
       gameState = 'transition';
       setTimeout(() => { canvas.width = 720; canvas.height = 480; currentLevel = 2; initDodge(); gameState = 'playing'; }, 1200);
     }
@@ -638,7 +648,7 @@ layout: null
       const hp = dHeartPiece;
       if (dPlayer.x < hp.x + 18 && dPlayer.x + dPlayer.w > hp.x - 18 && dPlayer.y < hp.y + 18 && dPlayer.y + dPlayer.h > hp.y - 18) {
         dHeartCollected = true; heartsFound[2] = true; updateHeartUI();
-        spawnParticles(hp.x, hp.y, '#ff4d6d', 40); spawnParticles(hp.x, hp.y, '#ffccd5', 25); screenShake = 8;
+        spawnParticles(hp.x, hp.y, '#ff4d6d', 40); spawnParticles(hp.x, hp.y, '#ffccd5', 25); screenShake = 8; playSfx('/audio/level_complete.wav', 0.5);
         gameState = 'transition';
         setTimeout(() => { currentLevel = 3; initBoss(); gameState = 'playing'; }, 1500);
       }
@@ -708,7 +718,7 @@ layout: null
     if (!keys['ArrowLeft'] && !keys['ArrowRight']) { p.vx *= fric; if (Math.abs(p.vx) < 0.15) p.vx = 0; }
     p.vx = Math.max(-maxVX, Math.min(maxVX, p.vx));
 
-    if ((keys[' '] || keys['ArrowUp']) && p.onGround && p.hurtTimer <= 0) { p.vy = jumpF; p.onGround = false; }
+    if ((keys[' '] || keys['ArrowUp']) && p.onGround && p.hurtTimer <= 0) { p.vy = jumpF; p.onGround = false; playSfx('/audio/jump.wav', 0.3); }
     p.vy += grav; if (p.vy > 12) p.vy = 12;
     p.x += p.vx; p.y += p.vy;
     if (p.y >= GROUND_Y) { p.y = GROUND_Y; p.vy = 0; p.onGround = true; }
@@ -716,7 +726,7 @@ layout: null
 
     // Player attack
     if ((keys['z'] || keys['Z']) && !p.attacking && p.hurtTimer <= 0) {
-      p.attacking = true; p.atkTimer = 20;
+      p.attacking = true; p.atkTimer = 20; playSfx('/audio/punch.wav', 0.4);
     }
     if (p.attacking) {
       p.atkTimer--;
@@ -733,7 +743,7 @@ layout: null
           spawnParticles(b.x + b.w / 2, b.y + b.h / 2, '#aaddff', 15);
           if (b.hp <= 0) {
             b.state = 'dead'; b.stateTimer = 60;
-            gameState = 'transition';
+            gameState = 'transition'; playSfx('/audio/level_complete.wav', 0.5);
             setTimeout(showWinScreen, 2000);
           }
         }
@@ -785,7 +795,7 @@ layout: null
             if (atkX < p.x + p.w && atkX + 30 > p.x && b.y < p.y + p.h && b.y + b.h > p.y) {
               p.hp--; p.hurtTimer = 15; p.iframes = 40;
               p.vx = -b.facing * 5; p.vy = -4;
-              screenShake = 8; spawnParticles(p.x + p.w / 2, p.y + p.h / 2, '#ff4d6d', 12);
+              screenShake = 8; spawnParticles(p.x + p.w / 2, p.y + p.h / 2, '#ff4d6d', 12); playSfx('/audio/punch.wav', 0.4);
               if (p.hp <= 0) {
                 gameState = 'transition';
                 showOverlay('defeated', 'the owlet monster won...', 'try again', () => { initBoss(); gameState = 'playing'; });
@@ -821,7 +831,7 @@ layout: null
       // Player pickup
       if (p.x < hd.x + 14 && p.x + p.w > hd.x - 14 && p.y < hd.y + 14 && p.y + p.h > hd.y - 14) {
         hd.alive = false;
-        if (p.hp < p.maxHp) { p.hp++; spawnParticles(hd.x, hd.y, '#44ff88', 12); }
+        if (p.hp < p.maxHp) { p.hp++; spawnParticles(hd.x, hd.y, '#44ff88', 12); playSfx('/audio/item_pickup.wav', 0.5); }
         else spawnParticles(hd.x, hd.y, '#ffb3c1', 6);
       }
     }
@@ -831,7 +841,7 @@ layout: null
       if (p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
         p.hp--; p.hurtTimer = 15; p.iframes = 40;
         p.vx = (p.x < b.x ? -1 : 1) * 5; p.vy = -4;
-        screenShake = 6; spawnParticles(p.x + p.w / 2, p.y + p.h / 2, '#ff4d6d', 8);
+        screenShake = 6; spawnParticles(p.x + p.w / 2, p.y + p.h / 2, '#ff4d6d', 8); playSfx('/audio/punch.wav', 0.35);
         if (p.hp <= 0) {
           gameState = 'transition';
           showOverlay('defeated', 'the owlet monster won...', 'try again', () => { initBoss(); gameState = 'playing'; });
@@ -977,6 +987,7 @@ layout: null
     animateHeart();
 
     ov.querySelector('#val-yes').onclick = () => {
+      playSfx('/audio/button.wav', 0.3);
       ov.querySelector('#val-buttons').style.display = 'none';
       ov.querySelector('#val-hint').style.opacity = '0';
       ov.querySelector('#val-question').style.display = 'none';
@@ -985,6 +996,7 @@ layout: null
       ov.querySelector('#play-again-btn').style.display = '';
     };
     ov.querySelector('#val-no').onclick = () => {
+      playSfx('/audio/button.wav', 0.3);
       ov.querySelector('#val-buttons').style.display = 'none';
       ov.querySelector('#val-hint').style.opacity = '0';
       ov.querySelector('#val-question').style.display = 'none';
@@ -1002,7 +1014,7 @@ layout: null
     };
 
     ov.querySelector('#play-again-btn').onclick = () => {
-      ov.remove();
+      playSfx('/audio/button.wav', 0.3); ov.remove();
       heartsFound = [false, false, false]; updateHeartUI();
       currentLevel = 0; canvas.width = 720; canvas.height = 480;
       initPlatformer(); gameState = 'playing';
